@@ -135,37 +135,48 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
           }),
         })
 
-        if (!quizRes.ok) throw new Error('Failed to create quiz')
+        if (!quizRes.ok) {
+          const error = await quizRes.json()
+          throw new Error(`Failed to create quiz: ${error.error || 'Unknown error'}`)
+        }
         const quiz = await quizRes.json()
 
         // Create questions
         for (let i = 0; i < questions.length; i++) {
-          await fetch('/api/questions', {
+          const questionRes = await fetch('/api/questions', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               quiz_id: quiz.id,
               order_index: i,
-              ...questions[i],
+              question_text: questions[i].question_text,
+              image_url: questions[i].image_url,
+              correct_answer: questions[i].correct_answer,
+              explanation: questions[i].explanation,
             }),
           })
+          if (!questionRes.ok) throw new Error(`Failed to create question ${i + 1}`)
         }
 
         // Create result tiers
         for (let i = 0; i < resultTiers.length; i++) {
-          await fetch('/api/result-tiers', {
+          const tierRes = await fetch('/api/result-tiers', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               quiz_id: quiz.id,
               order_index: i,
-              ...resultTiers[i],
+              tier_name: resultTiers[i].tier_name,
+              min_percentage: resultTiers[i].min_percentage,
+              max_percentage: resultTiers[i].max_percentage,
+              message: resultTiers[i].message,
             }),
           })
+          if (!tierRes.ok) throw new Error(`Failed to create result tier ${i + 1}`)
         }
       } else {
         // Update existing quiz
-        await fetch(`/api/quizzes/${initialData!.id}`, {
+        const updateRes = await fetch(`/api/quizzes/${initialData!.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -176,12 +187,20 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
           }),
         })
 
+        if (!updateRes.ok) {
+          const error = await updateRes.json()
+          throw new Error(`Failed to update quiz: ${error.error || 'Unknown error'}`)
+        }
+
         // Delete and recreate questions and tiers
-        await fetch(`/api/quizzes/${initialData!.id}/questions`, { method: 'DELETE' })
-        await fetch(`/api/quizzes/${initialData!.id}/result-tiers`, { method: 'DELETE' })
+        const deleteQuestionsRes = await fetch(`/api/quizzes/${initialData!.id}/questions`, { method: 'DELETE' })
+        if (!deleteQuestionsRes.ok) throw new Error('Failed to delete questions')
+
+        const deleteTiersRes = await fetch(`/api/quizzes/${initialData!.id}/result-tiers`, { method: 'DELETE' })
+        if (!deleteTiersRes.ok) throw new Error('Failed to delete result tiers')
 
         for (let i = 0; i < questions.length; i++) {
-          await fetch('/api/questions', {
+          const questionRes = await fetch('/api/questions', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -193,18 +212,23 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
               explanation: questions[i].explanation,
             }),
           })
+          if (!questionRes.ok) throw new Error(`Failed to create question ${i + 1}`)
         }
 
         for (let i = 0; i < resultTiers.length; i++) {
-          await fetch('/api/result-tiers', {
+          const tierRes = await fetch('/api/result-tiers', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               quiz_id: initialData!.id,
               order_index: i,
-              ...resultTiers[i],
+              tier_name: resultTiers[i].tier_name,
+              min_percentage: resultTiers[i].min_percentage,
+              max_percentage: resultTiers[i].max_percentage,
+              message: resultTiers[i].message,
             }),
           })
+          if (!tierRes.ok) throw new Error(`Failed to create result tier ${i + 1}`)
         }
       }
 
