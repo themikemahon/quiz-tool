@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import QuizList from './QuizList'
 
 export default function QuizzesPage() {
   return (
@@ -14,13 +15,7 @@ export default function QuizzesPage() {
           </Link>
         </div>
 
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-6">
-            <p className="text-gray-600">
-              Quiz list will be loaded here via client component
-            </p>
-          </div>
-        </div>
+        <QuizList />
       </div>
     </div>
   )

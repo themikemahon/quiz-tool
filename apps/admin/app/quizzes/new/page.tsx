@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import QuizForm from './QuizForm'
 
 export default function NewQuizPage() {
   return (
@@ -14,11 +15,7 @@ export default function NewQuizPage() {
           Create New Quiz
         </h1>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-gray-600">
-            Quiz creation form will be implemented here
-          </p>
-        </div>
+        <QuizForm />
       </div>
     </div>
   )
