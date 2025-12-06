@@ -2,6 +2,10 @@ import { sql } from '@vercel/postgres'
 import QuizPlayer from './QuizPlayer'
 import { notFound } from 'next/navigation'
 
+// Disable caching for quiz player
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 interface Question {
   id: number
   quiz_id: number

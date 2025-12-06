@@ -1,6 +1,10 @@
 import Link from 'next/link'
 import QuizList from './QuizList'
 
+// Disable caching for this page
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default function QuizzesPage() {
   return (
     <div className="min-h-screen bg-gray-50">
