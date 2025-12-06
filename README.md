@@ -2,6 +2,8 @@
 
 A flexible web-based quiz builder with CMS and embeddable quiz player.
 
+Database connected and ready!
+
 ## Project Structure
 
 - `/apps/admin` - CMS interface for creating and managing quizzes
