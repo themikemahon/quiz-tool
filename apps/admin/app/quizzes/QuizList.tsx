@@ -15,6 +15,13 @@ interface Quiz {
 export default function QuizList() {
   const [quizzes, setQuizzes] = useState<Quiz[]>([])
   const [loading, setLoading] = useState(true)
+  const [embedModal, setEmbedModal] = useState<{ show: boolean; quizId: number | null }>({
+    show: false,
+    quizId: null,
+  })
+  const [embedWidth, setEmbedWidth] = useState('600')
+  const [embedHeight, setEmbedHeight] = useState('800')
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     fetchQuizzes()
@@ -44,6 +51,31 @@ export default function QuizList() {
     }
   }
 
+  const getEmbedCode = (quizId: number) => {
+    const quizUrl = process.env.NEXT_PUBLIC_QUIZ_URL || 'https://your-quiz-domain.vercel.app'
+    return `<iframe src="${quizUrl}/${quizId}?embed=true" width="${embedWidth}" height="${embedHeight}" frameborder="0" style="border: 1px solid #e5e7eb; border-radius: 8px;"></iframe>`
+  }
+
+  const copyEmbedCode = () => {
+    if (embedModal.quizId) {
+      const code = getEmbedCode(embedModal.quizId)
+      navigator.clipboard.writeText(code)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
+  const openEmbedModal = (quizId: number) => {
+    setEmbedModal({ show: true, quizId })
+    setCopied(false)
+  }
+
+  const closeEmbedModal = () => {
+    setEmbedModal({ show: false, quizId: null })
+    setEmbedWidth('600')
+    setEmbedHeight('800')
+  }
+
   if (loading) {
     return <div className="text-center py-12">Loading quizzes...</div>
   }
@@ -63,8 +95,9 @@ export default function QuizList() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
-      <table className="min-w-full divide-y divide-gray-200">
+    <>
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -129,6 +162,15 @@ export default function QuizList() {
                     </svg>
                   </button>
                   <button
+                    onClick={() => openEmbedModal(quiz.id)}
+                    className="text-purple-600 hover:text-purple-900 transition"
+                    title="Copy Embed Code"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    </svg>
+                  </button>
+                  <button
                     onClick={() => deleteQuiz(quiz.id)}
                     className="text-red-600 hover:text-red-900 transition"
                     title="Delete"
@@ -144,5 +186,83 @@ export default function QuizList() {
         </tbody>
       </table>
     </div>
+
+    {/* Embed Code Modal */}
+    {embedModal.show && embedModal.quizId && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold text-gray-900">Embed Quiz</h2>
+            <button
+              onClick={closeEmbedModal}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <p className="text-gray-600 mb-4">
+            Copy this code to embed the quiz on your website
+          </p>
+
+          {/* Size Controls */}
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Width (px)
+              </label>
+              <input
+                type="number"
+                value={embedWidth}
+                onChange={(e) => setEmbedWidth(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Height (px)
+              </label>
+              <input
+                type="number"
+                value={embedHeight}
+                onChange={(e) => setEmbedHeight(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          {/* Embed Code */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Embed Code
+            </label>
+            <div className="relative">
+              <pre className="bg-gray-50 border border-gray-300 rounded-md p-4 text-sm overflow-x-auto">
+                <code className="text-gray-800">{getEmbedCode(embedModal.quizId)}</code>
+              </pre>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3">
+            <button
+              onClick={copyEmbedCode}
+              className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-700 transition"
+            >
+              {copied ? '✓ Copied!' : 'Copy to Clipboard'}
+            </button>
+            <button
+              onClick={closeEmbedModal}
+              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 font-semibold hover:bg-gray-50 transition"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   )
 }
