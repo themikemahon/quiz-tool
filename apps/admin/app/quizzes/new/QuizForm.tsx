@@ -10,14 +10,20 @@ interface Question {
   explanation: string
 }
 
+interface ResultTier {
+  tier_name: string
+  min_percentage: number
+  max_percentage: number
+  message: string
+}
+
 export default function QuizForm() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState<number | null>(null)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [introText, setIntroText] = useState('')
-  const [summaryText, setSummaryText] = useState('')
-  const [tipsText, setTipsText] = useState('')
   
   const [questions, setQuestions] = useState<Question[]>([
     { question_text: '', image_url: '', correct_answer: 'scam', explanation: '' },
@@ -25,10 +31,57 @@ export default function QuizForm() {
     { question_text: '', image_url: '', correct_answer: 'scam', explanation: '' },
   ])
 
+  const [resultTiers, setResultTiers] = useState<ResultTier[]>([
+    { tier_name: 'Novice', min_percentage: 0, max_percentage: 33, message: '' },
+    { tier_name: 'Competent', min_percentage: 34, max_percentage: 66, message: '' },
+    { tier_name: 'Expert', min_percentage: 67, max_percentage: 100, message: '' },
+  ])
+
   const updateQuestion = (index: number, field: keyof Question, value: string) => {
     const updated = [...questions]
     updated[index] = { ...updated[index], [field]: value }
     setQuestions(updated)
+  }
+
+  const addQuestion = () => {
+    setQuestions([...questions, { question_text: '', image_url: '', correct_answer: 'scam', explanation: '' }])
+  }
+
+  const removeQuestion = (index: number) => {
+    if (questions.length <= 1) {
+      alert('You must have at least one question')
+      return
+    }
+    setQuestions(questions.filter((_, i) => i !== index))
+  }
+
+  const updateResultTier = (index: number, field: keyof ResultTier, value: string | number) => {
+    const updated = [...resultTiers]
+    updated[index] = { ...updated[index], [field]: value }
+    setResultTiers(updated)
+  }
+
+  const handleImageUpload = async (index: number, file: File) => {
+    setUploading(index)
+    const formData = new FormData()
+    formData.append('file', file)
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+      
+      if (!res.ok) throw new Error('Upload failed')
+      
+      const { url } = await res.json()
+      updateQuestion(index, 'image_url', url)
+    } catch (error) {
+      console.error('Error uploading image:', error)
+      alert('Failed to upload image')
+    } finally {
+      setUploading(null)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent, status: 'draft' | 'published') => {
@@ -44,8 +97,6 @@ export default function QuizForm() {
           title,
           description,
           intro_text: introText,
-          summary_text: summaryText,
-          tips_text: tipsText,
           template_type: 'scam-detector',
           status,
         }),
@@ -64,6 +115,19 @@ export default function QuizForm() {
             quiz_id: quiz.id,
             order_index: i,
             ...questions[i],
+          }),
+        })
+      }
+
+      // Create result tiers
+      for (let i = 0; i < resultTiers.length; i++) {
+        await fetch('/api/result-tiers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            quiz_id: quiz.id,
+            order_index: i,
+            ...resultTiers[i],
           }),
         })
       }
@@ -124,54 +188,129 @@ export default function QuizForm() {
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Summary Text *
-          </label>
-          <textarea
-            value={summaryText}
-            onChange={(e) => setSummaryText(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            rows={3}
-            placeholder="Great job! Here's how you did..."
-            required
-          />
-        </div>
+      </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Tips Text *
-          </label>
-          <textarea
-            value={tipsText}
-            onChange={(e) => setTipsText(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            rows={4}
-            placeholder="Tips to improve: Always check the sender's email, look for spelling errors..."
-            required
-          />
-        </div>
+      {/* Result Tiers */}
+      <div className="bg-white rounded-lg shadow p-6 space-y-4">
+        <h2 className="text-xl font-semibold text-gray-900">Result Tiers</h2>
+        <p className="text-sm text-gray-600">
+          Define messages for different performance levels. Percentages are calculated automatically based on correct answers.
+        </p>
+
+        {resultTiers.map((tier, index) => (
+          <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-3">
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tier Name *
+                </label>
+                <input
+                  type="text"
+                  value={tier.tier_name}
+                  onChange={(e) => updateResultTier(index, 'tier_name', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Novice"
+                  required
+                />
+              </div>
+              <div className="w-32">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Min %
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={tier.min_percentage}
+                  onChange={(e) => updateResultTier(index, 'min_percentage', parseInt(e.target.value))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              <div className="w-32">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Max %
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={tier.max_percentage}
+                  onChange={(e) => updateResultTier(index, 'max_percentage', parseInt(e.target.value))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Message *
+              </label>
+              <textarea
+                value={tier.message}
+                onChange={(e) => updateResultTier(index, 'message', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                rows={3}
+                placeholder="You're just getting started! Here are some tips..."
+                required
+              />
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Questions */}
       {questions.map((q, index) => (
         <div key={index} className="bg-white rounded-lg shadow p-6 space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900">
-            Question {index + 1}
-          </h2>
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Question {index + 1}
+            </h2>
+            {questions.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeQuestion(index)}
+                className="text-red-600 hover:text-red-700 text-sm font-medium"
+              >
+                Remove Question
+              </button>
+            )}
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Image URL *
+              Image *
             </label>
-            <input
-              type="url"
-              value={q.image_url}
-              onChange={(e) => updateQuestion(index, 'image_url', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="https://example.com/image.jpg"
-              required
-            />
+            <div className="space-y-2">
+              <input
+                type="url"
+                value={q.image_url}
+                onChange={(e) => updateQuestion(index, 'image_url', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="https://example.com/image.jpg or upload below"
+              />
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-500">or</span>
+                <label className="cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) handleImageUpload(index, file)
+                    }}
+                    className="hidden"
+                    disabled={uploading === index}
+                  />
+                  <span className="inline-block px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm">
+                    {uploading === index ? 'Uploading...' : 'Upload Image'}
+                  </span>
+                </label>
+              </div>
+              {q.image_url && (
+                <img src={q.image_url} alt="Preview" className="mt-2 max-w-xs rounded-lg border" />
+              )}
+            </div>
           </div>
 
           <div>
@@ -218,6 +357,17 @@ export default function QuizForm() {
           </div>
         </div>
       ))}
+
+      {/* Add Question Button */}
+      <div className="flex justify-center">
+        <button
+          type="button"
+          onClick={addQuestion}
+          className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
+        >
+          + Add Another Question
+        </button>
+      </div>
 
       {/* Actions */}
       <div className="flex gap-4">

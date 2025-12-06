@@ -7,12 +7,20 @@ export interface Quiz {
   title: string;
   description?: string;
   intro_text?: string;
-  summary_text?: string;
-  tips_text?: string;
   status: QuizStatus;
   template_type: TemplateType;
   created_at: string;
   updated_at: string;
+}
+
+export interface ResultTier {
+  id: number;
+  quiz_id: number;
+  tier_name: string;
+  min_percentage: number;
+  max_percentage: number;
+  message: string;
+  order_index: number;
 }
 
 export interface Question {

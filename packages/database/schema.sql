@@ -5,8 +5,6 @@ CREATE TABLE IF NOT EXISTS quizzes (
   title VARCHAR(255) NOT NULL,
   description TEXT,
   intro_text TEXT,
-  summary_text TEXT,
-  tips_text TEXT,
   status VARCHAR(20) DEFAULT 'draft' CHECK (status IN ('draft', 'published')),
   template_type VARCHAR(50) DEFAULT 'scam-detector',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -32,6 +30,17 @@ CREATE TABLE IF NOT EXISTS answer_options (
   order_index INTEGER NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS result_tiers (
+  id SERIAL PRIMARY KEY,
+  quiz_id INTEGER REFERENCES quizzes(id) ON DELETE CASCADE,
+  tier_name VARCHAR(50) NOT NULL,
+  min_percentage INTEGER NOT NULL,
+  max_percentage INTEGER NOT NULL,
+  message TEXT NOT NULL,
+  order_index INTEGER NOT NULL
+);
+
 CREATE INDEX idx_quizzes_status ON quizzes(status);
 CREATE INDEX idx_questions_quiz_id ON questions(quiz_id);
 CREATE INDEX idx_answer_options_question_id ON answer_options(question_id);
+CREATE INDEX idx_result_tiers_quiz_id ON result_tiers(quiz_id);

@@ -43,7 +43,7 @@ export async function PUT(
   try {
     const quizId = parseInt(params.id)
     const body = await request.json()
-    const { title, description, intro_text, summary_text, tips_text, status } = body
+    const { title, description, intro_text, status } = body
 
     const { rows } = await sql<Quiz>`
       UPDATE quizzes 
@@ -51,8 +51,6 @@ export async function PUT(
         title = ${title},
         description = ${description},
         intro_text = ${intro_text},
-        summary_text = ${summary_text},
-        tips_text = ${tips_text},
         status = ${status},
         updated_at = CURRENT_TIMESTAMP
       WHERE id = ${quizId}

@@ -21,11 +21,11 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { title, description, intro_text, template_type } = body
+    const { title, description, intro_text, template_type, status } = body
 
     const { rows } = await sql<Quiz>`
       INSERT INTO quizzes (title, description, intro_text, template_type, status)
-      VALUES (${title}, ${description}, ${intro_text}, ${template_type || 'scam-detector'}, 'draft')
+      VALUES (${title}, ${description}, ${intro_text}, ${template_type || 'scam-detector'}, ${status || 'draft'})
       RETURNING *
     `
 
