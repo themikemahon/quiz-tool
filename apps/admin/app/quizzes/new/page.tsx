@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import QuizForm from './QuizForm'
+import QuizForm from '@/components/QuizForm'
 
 export default function NewQuizPage() {
   return (
@@ -15,7 +15,7 @@ export default function NewQuizPage() {
           Create New Quiz
         </h1>
 
-        <QuizForm />
+        <QuizForm mode="create" />
       </div>
     </div>
   )

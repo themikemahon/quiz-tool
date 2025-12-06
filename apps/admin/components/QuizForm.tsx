@@ -19,43 +19,54 @@ interface ResultTier {
   message: string
 }
 
-interface Quiz {
-  id: number
-  title: string
-  description: string
-  intro_text: string
-  status: string
-  questions: any[]
-  result_tiers: any[]
+interface QuizFormProps {
+  mode: 'create' | 'edit'
+  initialData?: {
+    id: number
+    title: string
+    description: string
+    intro_text: string
+    status: string
+    questions: any[]
+    result_tiers: any[]
+  }
 }
 
-export default function EditQuizForm({ quiz }: { quiz: Quiz }) {
+export default function QuizForm({ mode, initialData }: QuizFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState<number | null>(null)
-  const [title, setTitle] = useState(quiz.title)
-  const [description, setDescription] = useState(quiz.description || '')
-  const [introText, setIntroText] = useState(quiz.intro_text || '')
-  const [status, setStatus] = useState(quiz.status)
+  
+  const [title, setTitle] = useState(initialData?.title || '')
+  const [description, setDescription] = useState(initialData?.description || '')
+  const [introText, setIntroText] = useState(initialData?.intro_text || '')
   
   const [questions, setQuestions] = useState<Question[]>(
-    quiz.questions.map(q => ({
+    initialData?.questions.map(q => ({
       id: q.id,
       question_text: q.question_text,
       image_url: q.image_url || '',
       correct_answer: q.correct_answer,
       explanation: q.explanation || '',
-    }))
+    })) || [
+      { question_text: '', image_url: '', correct_answer: 'scam', explanation: '' },
+      { question_text: '', image_url: '', correct_answer: 'scam', explanation: '' },
+      { question_text: '', image_url: '', correct_answer: 'scam', explanation: '' },
+    ]
   )
 
   const [resultTiers, setResultTiers] = useState<ResultTier[]>(
-    quiz.result_tiers.map(t => ({
+    initialData?.result_tiers.map(t => ({
       id: t.id,
       tier_name: t.tier_name,
       min_percentage: t.min_percentage,
       max_percentage: t.max_percentage,
       message: t.message,
-    }))
+    })) || [
+      { tier_name: 'Novice', min_percentage: 0, max_percentage: 33, message: '' },
+      { tier_name: 'Competent', min_percentage: 34, max_percentage: 66, message: '' },
+      { tier_name: 'Expert', min_percentage: 67, max_percentage: 100, message: '' },
+    ]
   )
 
   const updateQuestion = (index: number, field: keyof Question, value: string) => {
@@ -105,65 +116,103 @@ export default function EditQuizForm({ quiz }: { quiz: Quiz }) {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent, newStatus: 'draft' | 'published') => {
+  const handleSubmit = async (e: React.FormEvent, status: 'draft' | 'published') => {
     e.preventDefault()
     setLoading(true)
 
     try {
-      // Update quiz
-      await fetch(`/api/quizzes/${quiz.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title,
-          description,
-          intro_text: introText,
-          status: newStatus,
-        }),
-      })
-
-      // Delete all existing questions and tiers, then recreate
-      // (simpler than trying to update/add/delete individually)
-      await fetch(`/api/quizzes/${quiz.id}/questions`, { method: 'DELETE' })
-      await fetch(`/api/quizzes/${quiz.id}/result-tiers`, { method: 'DELETE' })
-
-      // Create questions
-      for (let i = 0; i < questions.length; i++) {
-        await fetch('/api/questions', {
+      if (mode === 'create') {
+        // Create new quiz
+        const quizRes = await fetch('/api/quizzes', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            quiz_id: quiz.id,
-            order_index: i,
-            question_text: questions[i].question_text,
-            image_url: questions[i].image_url,
-            correct_answer: questions[i].correct_answer,
-            explanation: questions[i].explanation,
+            title,
+            description,
+            intro_text: introText,
+            template_type: 'scam-detector',
+            status,
           }),
         })
-      }
 
-      // Create result tiers
-      for (let i = 0; i < resultTiers.length; i++) {
-        await fetch('/api/result-tiers', {
-          method: 'POST',
+        if (!quizRes.ok) throw new Error('Failed to create quiz')
+        const quiz = await quizRes.json()
+
+        // Create questions
+        for (let i = 0; i < questions.length; i++) {
+          await fetch('/api/questions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              quiz_id: quiz.id,
+              order_index: i,
+              ...questions[i],
+            }),
+          })
+        }
+
+        // Create result tiers
+        for (let i = 0; i < resultTiers.length; i++) {
+          await fetch('/api/result-tiers', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              quiz_id: quiz.id,
+              order_index: i,
+              ...resultTiers[i],
+            }),
+          })
+        }
+      } else {
+        // Update existing quiz
+        await fetch(`/api/quizzes/${initialData!.id}`, {
+          method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            quiz_id: quiz.id,
-            order_index: i,
-            tier_name: resultTiers[i].tier_name,
-            min_percentage: resultTiers[i].min_percentage,
-            max_percentage: resultTiers[i].max_percentage,
-            message: resultTiers[i].message,
+            title,
+            description,
+            intro_text: introText,
+            status,
           }),
         })
+
+        // Delete and recreate questions and tiers
+        await fetch(`/api/quizzes/${initialData!.id}/questions`, { method: 'DELETE' })
+        await fetch(`/api/quizzes/${initialData!.id}/result-tiers`, { method: 'DELETE' })
+
+        for (let i = 0; i < questions.length; i++) {
+          await fetch('/api/questions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              quiz_id: initialData!.id,
+              order_index: i,
+              question_text: questions[i].question_text,
+              image_url: questions[i].image_url,
+              correct_answer: questions[i].correct_answer,
+              explanation: questions[i].explanation,
+            }),
+          })
+        }
+
+        for (let i = 0; i < resultTiers.length; i++) {
+          await fetch('/api/result-tiers', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              quiz_id: initialData!.id,
+              order_index: i,
+              ...resultTiers[i],
+            }),
+          })
+        }
       }
 
       router.push('/quizzes')
       router.refresh()
     } catch (error) {
-      console.error('Error updating quiz:', error)
-      alert('Failed to update quiz')
+      console.error(`Error ${mode === 'create' ? 'creating' : 'updating'} quiz:`, error)
+      alert(`Failed to ${mode === 'create' ? 'create' : 'update'} quiz`)
     } finally {
       setLoading(false)
     }
@@ -184,6 +233,7 @@ export default function EditQuizForm({ quiz }: { quiz: Quiz }) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Can You Spot the Scam?"
             required
           />
         </div>
@@ -197,6 +247,7 @@ export default function EditQuizForm({ quiz }: { quiz: Quiz }) {
             onChange={(e) => setDescription(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             rows={2}
+            placeholder="A quick quiz to test your scam detection skills"
           />
         </div>
 
@@ -209,6 +260,7 @@ export default function EditQuizForm({ quiz }: { quiz: Quiz }) {
             onChange={(e) => setIntroText(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             rows={3}
+            placeholder="Welcome! You'll see 3 images. Decide if each one is a scam or not."
             required
           />
         </div>
@@ -217,7 +269,10 @@ export default function EditQuizForm({ quiz }: { quiz: Quiz }) {
       {/* Result Tiers */}
       <div className="bg-white rounded-lg shadow p-6 space-y-4">
         <h2 className="text-xl font-semibold text-gray-900">Result Tiers</h2>
-        
+        <p className="text-sm text-gray-600">
+          Define messages for different performance levels. Percentages are calculated automatically based on correct answers.
+        </p>
+
         {resultTiers.map((tier, index) => (
           <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-3">
             <div className="flex items-center gap-4">
@@ -230,6 +285,7 @@ export default function EditQuizForm({ quiz }: { quiz: Quiz }) {
                   value={tier.tier_name}
                   onChange={(e) => updateResultTier(index, 'tier_name', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Novice"
                   required
                 />
               </div>
@@ -271,6 +327,7 @@ export default function EditQuizForm({ quiz }: { quiz: Quiz }) {
                 onChange={(e) => updateResultTier(index, 'message', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 rows={3}
+                placeholder="You're just getting started! Here are some tips..."
                 required
               />
             </div>
@@ -306,6 +363,7 @@ export default function EditQuizForm({ quiz }: { quiz: Quiz }) {
                 value={q.image_url}
                 onChange={(e) => updateQuestion(index, 'image_url', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="https://example.com/image.jpg or upload below"
               />
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-500">or</span>
@@ -340,6 +398,7 @@ export default function EditQuizForm({ quiz }: { quiz: Quiz }) {
               value={q.question_text}
               onChange={(e) => updateQuestion(index, 'question_text', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Is this a scam?"
               required
             />
           </div>
@@ -368,6 +427,7 @@ export default function EditQuizForm({ quiz }: { quiz: Quiz }) {
               onChange={(e) => updateQuestion(index, 'explanation', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows={2}
+              placeholder="This is a scam because..."
               required
             />
           </div>
@@ -401,7 +461,7 @@ export default function EditQuizForm({ quiz }: { quiz: Quiz }) {
           disabled={loading}
           className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? 'Updating...' : 'Update & Publish'}
+          {loading ? (mode === 'create' ? 'Publishing...' : 'Updating...') : (mode === 'create' ? 'Publish Quiz' : 'Update & Publish')}
         </button>
       </div>
     </form>

@@ -1,7 +1,7 @@
 import { sql } from '@vercel/postgres'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import EditQuizForm from './EditQuizForm'
+import QuizForm from '@/components/QuizForm'
 
 async function getQuiz(id: string) {
   try {
@@ -58,7 +58,7 @@ export default async function EditQuizPage({ params }: { params: { id: string } 
           Edit Quiz
         </h1>
 
-        <EditQuizForm quiz={quiz} />
+        <QuizForm mode="edit" initialData={quiz} />
       </div>
     </div>
   )
