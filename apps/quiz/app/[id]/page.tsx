@@ -76,12 +76,20 @@ async function getQuiz(id: string) {
   }
 }
 
-export default async function QuizPage({ params }: { params: { id: string } }) {
+export default async function QuizPage({ 
+  params,
+  searchParams 
+}: { 
+  params: { id: string }
+  searchParams: { embed?: string }
+}) {
   const quiz = await getQuiz(params.id)
 
   if (!quiz) {
     notFound()
   }
 
-  return <QuizPlayer quiz={quiz} />
+  const isEmbedMode = searchParams.embed === 'true'
+
+  return <QuizPlayer quiz={quiz} embedMode={isEmbedMode} />
 }
