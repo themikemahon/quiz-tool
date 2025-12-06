@@ -2,7 +2,7 @@
 
 A flexible web-based quiz builder with CMS and embeddable quiz player.
 
-Database connected and ready!
+Database and blob storage connected!
 
 ## Project Structure
 
