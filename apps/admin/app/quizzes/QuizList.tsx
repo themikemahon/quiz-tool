@@ -103,14 +103,28 @@ export default function QuizList() {
                 {new Date(quiz.updated_at).toLocaleDateString()}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                <a
-                  href={`${process.env.NEXT_PUBLIC_QUIZ_URL || 'http://localhost:3001'}/${quiz.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => {
+                    const url = prompt('Enter your quiz player URL (e.g., https://quiz-tool-quiz.vercel.app):')
+                    if (url) {
+                      window.open(`${url}/${quiz.id}`, '_blank')
+                    }
+                  }}
                   className="text-blue-600 hover:text-blue-900"
                 >
                   View
-                </a>
+                </button>
+                <span className="text-gray-400">|</span>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(`YOUR_QUIZ_URL/${quiz.id}`)
+                    alert(`Quiz ID: ${quiz.id}\n\nCopy your quiz player URL and add /${quiz.id} to the end`)
+                  }}
+                  className="text-green-600 hover:text-green-900"
+                >
+                  Copy ID
+                </button>
+                <span className="text-gray-400">|</span>
                 <button
                   onClick={() => deleteQuiz(quiz.id)}
                   className="text-red-600 hover:text-red-900"
