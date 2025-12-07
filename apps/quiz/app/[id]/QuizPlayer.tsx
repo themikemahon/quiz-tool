@@ -97,23 +97,12 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
           </h1>
           {quiz.description && (
             <p className={embedMode 
-              ? "text-sm text-gray-600 mb-3" 
-              : "text-base text-gray-600 mb-4"
+              ? "text-sm text-gray-600 mb-4" 
+              : "text-base text-gray-600 mb-5"
             }>
               {quiz.description}
             </p>
           )}
-          <div className={embedMode
-            ? "bg-blue-50 rounded-md p-3 mb-4"
-            : "bg-blue-50 rounded-md p-4 mb-5"
-          }>
-            <p className={embedMode 
-              ? "text-sm text-gray-700 whitespace-pre-line" 
-              : "text-sm text-gray-700 whitespace-pre-line"
-            }>
-              {quiz.intro_text}
-            </p>
-          </div>
           <button
             onClick={() => setState('question')}
             className={embedMode
