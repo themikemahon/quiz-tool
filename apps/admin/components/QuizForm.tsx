@@ -266,120 +266,86 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
     }
   }
 
+  const saveQuizLanguage = async (
+    lang: Language,
+    data: LanguageData,
+    status: 'draft' | 'published',
+    parentQuizId?: number
+  ): Promise<number> => {
+    // Create or update quiz
+    const quizRes = await fetch('/api/quizzes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: data.title,
+        description: data.description,
+        intro_text: data.introText,
+        template_type: 'scam-detector',
+        status,
+        language: lang,
+        parent_quiz_id: parentQuizId || null,
+      }),
+    })
+
+    if (!quizRes.ok) {
+      const error = await quizRes.json()
+      throw new Error(`Failed to create ${lang} quiz: ${error.error || 'Unknown error'}`)
+    }
+    const quiz = await quizRes.json()
+
+    // Create questions
+    for (let i = 0; i < data.questions.length; i++) {
+      const questionRes = await fetch('/api/questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          quiz_id: quiz.id,
+          order_index: i,
+          question_text: data.questions[i].question_text,
+          image_url: data.questions[i].image_url,
+          correct_answer: data.questions[i].correct_answer,
+          explanation: data.questions[i].explanation,
+        }),
+      })
+      if (!questionRes.ok) throw new Error(`Failed to create question ${i + 1}`)
+    }
+
+    // Create result tiers
+    for (let i = 0; i < data.resultTiers.length; i++) {
+      const tierRes = await fetch('/api/result-tiers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          quiz_id: quiz.id,
+          order_index: i,
+          tier_name: data.resultTiers[i].tier_name,
+          min_percentage: data.resultTiers[i].min_percentage,
+          max_percentage: data.resultTiers[i].max_percentage,
+          message: data.resultTiers[i].message,
+        }),
+      })
+      if (!tierRes.ok) throw new Error(`Failed to create result tier ${i + 1}`)
+    }
+
+    return quiz.id
+  }
+
   const handleSubmit = async (e: React.FormEvent, status: 'draft' | 'published') => {
     e.preventDefault()
     setLoading(true)
 
     try {
-      if (mode === 'create') {
-        // Create new quiz
-        const quizRes = await fetch('/api/quizzes', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title,
-            description,
-            intro_text: introText,
-            template_type: 'scam-detector',
-            status,
-          }),
-        })
-
-        if (!quizRes.ok) {
-          const error = await quizRes.json()
-          throw new Error(`Failed to create quiz: ${error.error || 'Unknown error'}`)
-        }
-        const quiz = await quizRes.json()
-
-        // Create questions
-        for (let i = 0; i < questions.length; i++) {
-          const questionRes = await fetch('/api/questions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              quiz_id: quiz.id,
-              order_index: i,
-              question_text: questions[i].question_text,
-              image_url: questions[i].image_url,
-              correct_answer: questions[i].correct_answer,
-              explanation: questions[i].explanation,
-            }),
-          })
-          if (!questionRes.ok) throw new Error(`Failed to create question ${i + 1}`)
-        }
-
-        // Create result tiers
-        for (let i = 0; i < resultTiers.length; i++) {
-          const tierRes = await fetch('/api/result-tiers', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              quiz_id: quiz.id,
-              order_index: i,
-              tier_name: resultTiers[i].tier_name,
-              min_percentage: resultTiers[i].min_percentage,
-              max_percentage: resultTiers[i].max_percentage,
-              message: resultTiers[i].message,
-            }),
-          })
-          if (!tierRes.ok) throw new Error(`Failed to create result tier ${i + 1}`)
-        }
-      } else {
-        // Update existing quiz
-        const updateRes = await fetch(`/api/quizzes/${initialData!.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title,
-            description,
-            intro_text: introText,
-            status,
-          }),
-        })
-
-        if (!updateRes.ok) {
-          const error = await updateRes.json()
-          throw new Error(`Failed to update quiz: ${error.error || 'Unknown error'}`)
-        }
-
-        // Delete and recreate questions and tiers
-        const deleteQuestionsRes = await fetch(`/api/quizzes/${initialData!.id}/questions`, { method: 'DELETE' })
-        if (!deleteQuestionsRes.ok) throw new Error('Failed to delete questions')
-
-        const deleteTiersRes = await fetch(`/api/quizzes/${initialData!.id}/result-tiers`, { method: 'DELETE' })
-        if (!deleteTiersRes.ok) throw new Error('Failed to delete result tiers')
-
-        for (let i = 0; i < questions.length; i++) {
-          const questionRes = await fetch('/api/questions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              quiz_id: initialData!.id,
-              order_index: i,
-              question_text: questions[i].question_text,
-              image_url: questions[i].image_url,
-              correct_answer: questions[i].correct_answer,
-              explanation: questions[i].explanation,
-            }),
-          })
-          if (!questionRes.ok) throw new Error(`Failed to create question ${i + 1}`)
-        }
-
-        for (let i = 0; i < resultTiers.length; i++) {
-          const tierRes = await fetch('/api/result-tiers', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              quiz_id: initialData!.id,
-              order_index: i,
-              tier_name: resultTiers[i].tier_name,
-              min_percentage: resultTiers[i].min_percentage,
-              max_percentage: resultTiers[i].max_percentage,
-              message: resultTiers[i].message,
-            }),
-          })
-          if (!tierRes.ok) throw new Error(`Failed to create result tier ${i + 1}`)
-        }
+      // Save English quiz first (parent)
+      const englishQuizId = await saveQuizLanguage('en', languageData.en, status)
+      
+      // Save French translation if it has content
+      if (languageData.fr.title && languageData.fr.questions.length > 0) {
+        await saveQuizLanguage('fr', languageData.fr, status, englishQuizId)
+      }
+      
+      // Save German translation if it has content
+      if (languageData.de.title && languageData.de.questions.length > 0) {
+        await saveQuizLanguage('de', languageData.de, status, englishQuizId)
       }
 
       router.push('/quizzes')

@@ -21,6 +21,7 @@ export default function QuizList() {
   })
   const [embedWidth, setEmbedWidth] = useState('600')
   const [embedHeight, setEmbedHeight] = useState('800')
+  const [embedLanguage, setEmbedLanguage] = useState<'en' | 'fr' | 'de'>('en')
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
@@ -53,7 +54,8 @@ export default function QuizList() {
 
   const getEmbedCode = (quizId: number) => {
     const quizUrl = process.env.NEXT_PUBLIC_QUIZ_URL || 'https://your-quiz-domain.vercel.app'
-    return `<iframe src="${quizUrl}/${quizId}?embed=true" width="${embedWidth}" height="${embedHeight}" frameborder="0" style="border: 1px solid #e5e7eb; border-radius: 8px;"></iframe>`
+    const langParam = embedLanguage !== 'en' ? `&lang=${embedLanguage}` : ''
+    return `<iframe src="${quizUrl}/${quizId}?embed=true${langParam}" width="${embedWidth}" height="${embedHeight}" frameborder="0" style="border: 1px solid #e5e7eb; border-radius: 8px;"></iframe>`
   }
 
   const copyEmbedCode = () => {
@@ -74,6 +76,7 @@ export default function QuizList() {
     setEmbedModal({ show: false, quizId: null })
     setEmbedWidth('600')
     setEmbedHeight('800')
+    setEmbedLanguage('en')
   }
 
   if (loading) {
@@ -207,8 +210,8 @@ export default function QuizList() {
             Copy this code to embed the quiz on your website
           </p>
 
-          {/* Size Controls */}
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          {/* Size and Language Controls */}
+          <div className="grid grid-cols-3 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Width (px)
@@ -230,6 +233,20 @@ export default function QuizList() {
                 onChange={(e) => setEmbedHeight(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Language
+              </label>
+              <select
+                value={embedLanguage}
+                onChange={(e) => setEmbedLanguage(e.target.value as 'en' | 'fr' | 'de')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="en">English</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+              </select>
             </div>
           </div>
 
