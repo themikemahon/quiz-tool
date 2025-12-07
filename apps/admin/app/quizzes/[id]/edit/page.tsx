@@ -7,7 +7,6 @@ interface Quiz {
   id: number
   title: string
   description: string
-  intro_text: string
   status: string
   template_type: string
   created_at: string

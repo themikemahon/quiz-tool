@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { getTranslations } from '../../../../packages/shared/translations'
 
 interface Question {
   id: number
@@ -22,7 +23,6 @@ interface Quiz {
   id: number
   title: string
   description: string
-  intro_text: string
   questions: Question[]
   result_tiers: ResultTier[]
 }
@@ -30,11 +30,12 @@ interface Quiz {
 interface QuizPlayerProps {
   quiz: Quiz
   embedMode?: boolean
+  language?: string
 }
 
 type QuizState = 'intro' | 'question' | 'result'
 
-export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps) {
+export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPlayerProps) {
   const [state, setState] = useState<QuizState>('intro')
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [answers, setAnswers] = useState<Record<number, string>>({})
@@ -42,6 +43,7 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
 
   const currentQuestion = quiz.questions[currentQuestionIndex]
   const totalQuestions = quiz.questions.length
+  const t = getTranslations(language)
 
   const handleAnswer = (answer: string) => {
     setAnswers({ ...answers, [currentQuestion.id]: answer })
@@ -110,7 +112,7 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
               : "w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition"
             }
           >
-            Start Quiz
+            {t.startQuiz}
           </button>
         </div>
       </div>
@@ -137,7 +139,7 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
           <div className={embedMode ? "mb-3" : "mb-4"}>
             <div className="flex justify-between items-center mb-2">
               <span className="text-xs font-medium text-gray-600">
-                Question {currentQuestionIndex + 1} of {totalQuestions}
+                {t.question} {currentQuestionIndex + 1} {t.of} {totalQuestions}
               </span>
               <span className="text-xs font-medium text-gray-600">
                 {Math.round(((currentQuestionIndex + 1) / totalQuestions) * 100)}%
@@ -185,7 +187,7 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
                   : "bg-red-100 text-red-700 px-3 py-2 rounded-md text-sm font-semibold hover:bg-red-200 transition border border-red-300"
                 }
               >
-                🚨 Scam
+                🚨 {t.scam}
               </button>
               <button
                 onClick={() => handleAnswer('not-scam')}
@@ -194,7 +196,7 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
                   : "bg-green-100 text-green-700 px-3 py-2 rounded-md text-sm font-semibold hover:bg-green-200 transition border border-green-300"
                 }
               >
-                ✅ Not a Scam
+                ✅ {t.notScam}
               </button>
             </div>
           ) : (
@@ -214,7 +216,7 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
                     {isCorrect ? '✅' : '❌'}
                   </span>
                   <span className={`text-base font-bold ${isCorrect ? 'text-green-700' : 'text-red-700'}`}>
-                    {isCorrect ? 'Correct!' : 'Incorrect'}
+                    {isCorrect ? t.correct : t.incorrect}
                   </span>
                 </div>
                 <p className="text-sm text-gray-700">
@@ -230,7 +232,7 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
                   : "w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition"
                 }
               >
-                {currentQuestionIndex < totalQuestions - 1 ? 'Next Question' : 'See Results'}
+                {currentQuestionIndex < totalQuestions - 1 ? t.nextQuestion : t.seeResults}
               </button>
             </div>
           )}
@@ -256,7 +258,7 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
             ? "text-xl font-bold text-gray-900 mb-2" 
             : "text-2xl font-bold text-gray-900 mb-3"
           }>
-            Quiz Complete!
+            {t.quizComplete}
           </h1>
           <div className={embedMode
             ? "inline-block bg-blue-100 rounded-full px-4 py-2 mb-2"
@@ -273,7 +275,7 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
             ? "text-sm text-gray-600" 
             : "text-base text-gray-600"
           }>
-            You scored {results.percentage}%
+            {t.youScored} {results.percentage}%
           </p>
         </div>
 
@@ -301,13 +303,13 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
             onClick={handleRestart}
             className="w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition"
           >
-            Take Quiz Again
+            {t.takeQuizAgain}
           </button>
           <button
             onClick={() => window.location.href = '/'}
             className="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-md text-sm font-semibold hover:bg-gray-200 transition"
           >
-            Back to Home
+            {t.backToHome}
           </button>
         </div>
       </div>

@@ -31,7 +31,6 @@ interface Quiz {
   id: number
   title: string
   description: string
-  intro_text: string
   status: string
   template_type: string
   created_at: string
@@ -79,7 +78,6 @@ async function getQuiz(id: string, language?: string) {
       ...quiz,
       title: getTranslatedField(quiz, 'title'),
       description: getTranslatedField(quiz, 'description'),
-      intro_text: getTranslatedField(quiz, 'intro_text'),
       questions: questionRows.map(q => ({
         ...q,
         question_text: getTranslatedField(q, 'question_text'),
@@ -112,5 +110,5 @@ export default async function QuizPage({
 
   const isEmbedMode = searchParams.embed === 'true'
 
-  return <QuizPlayer quiz={quiz} embedMode={isEmbedMode} />
+  return <QuizPlayer quiz={quiz} embedMode={isEmbedMode} language={searchParams.lang} />
 }

@@ -25,7 +25,6 @@ interface QuizFormProps {
     id: number
     title: string
     description: string
-    intro_text: string
     status: string
     questions: any[]
     result_tiers: any[]
@@ -37,7 +36,6 @@ type Language = 'en' | 'fr' | 'de'
 interface LanguageData {
   title: string
   description: string
-  introText: string
   questions: Question[]
   resultTiers: ResultTier[]
 }
@@ -66,7 +64,6 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
     en: {
       title: initialData?.title || '',
       description: initialData?.description || '',
-      introText: initialData?.intro_text || '',
       questions: initialData?.questions.map(q => ({
         id: q.id,
         question_text: q.question_text,
@@ -85,7 +82,6 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
     fr: {
       title: (initialData as any)?.title_fr || '',
       description: (initialData as any)?.description_fr || '',
-      introText: (initialData as any)?.intro_text_fr || '',
       questions: initialData?.questions.map(q => ({
         id: q.id,
         question_text: (q as any).question_text_fr || '',
@@ -104,7 +100,6 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
     de: {
       title: (initialData as any)?.title_de || '',
       description: (initialData as any)?.description_de || '',
-      introText: (initialData as any)?.intro_text_de || '',
       questions: initialData?.questions.map(q => ({
         id: q.id,
         question_text: (q as any).question_text_de || '',
@@ -126,7 +121,6 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
   const currentData = languageData[activeLanguage]
   const title = currentData.title
   const description = currentData.description
-  const introText = currentData.introText
   const questions = currentData.questions
   const resultTiers = currentData.resultTiers
   
@@ -142,13 +136,6 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
     setLanguageData(prev => ({
       ...prev,
       [activeLanguage]: { ...prev[activeLanguage], description: value }
-    }))
-  }
-  
-  const setIntroText = (value: string) => {
-    setLanguageData(prev => ({
-      ...prev,
-      [activeLanguage]: { ...prev[activeLanguage], introText: value }
     }))
   }
   
@@ -216,16 +203,15 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
     try {
       const englishData = languageData.en
       
-      // Translate basic fields
-      const translatedTitle = await translateText(englishData.title, activeLanguage)
-      const translatedDescription = await translateText(englishData.description, activeLanguage)
-      const translatedIntroText = await translateText(englishData.introText, activeLanguage)
+      // Translate basic fields (only if they have content)
+      const translatedTitle = englishData.title ? await translateText(englishData.title, activeLanguage) : ''
+      const translatedDescription = englishData.description ? await translateText(englishData.description, activeLanguage) : ''
       
       // Translate questions
       const translatedQuestions: Question[] = []
       for (const q of englishData.questions) {
-        const translatedQuestion = await translateText(q.question_text, activeLanguage)
-        const translatedExplanation = await translateText(q.explanation, activeLanguage)
+        const translatedQuestion = q.question_text ? await translateText(q.question_text, activeLanguage) : ''
+        const translatedExplanation = q.explanation ? await translateText(q.explanation, activeLanguage) : ''
         translatedQuestions.push({
           ...q,
           question_text: translatedQuestion,
@@ -237,8 +223,8 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
       // Translate result tiers
       const translatedTiers: ResultTier[] = []
       for (const tier of englishData.resultTiers) {
-        const translatedName = await translateText(tier.tier_name, activeLanguage)
-        const translatedMessage = await translateText(tier.message, activeLanguage)
+        const translatedName = tier.tier_name ? await translateText(tier.tier_name, activeLanguage) : ''
+        const translatedMessage = tier.message ? await translateText(tier.message, activeLanguage) : ''
         translatedTiers.push({
           ...tier,
           tier_name: translatedName,
@@ -252,7 +238,6 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
         [activeLanguage]: {
           title: translatedTitle,
           description: translatedDescription,
-          introText: translatedIntroText,
           questions: translatedQuestions,
           resultTiers: translatedTiers,
         }
@@ -305,13 +290,10 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
           body: JSON.stringify({
             title: enData.title,
             description: enData.description,
-            intro_text: enData.introText,
             title_fr: frData.title || null,
             title_de: deData.title || null,
             description_fr: frData.description || null,
             description_de: deData.description || null,
-            intro_text_fr: frData.introText || null,
-            intro_text_de: deData.introText || null,
             template_type: 'scam-detector',
             status,
           }),
@@ -372,13 +354,10 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
           body: JSON.stringify({
             title: enData.title,
             description: enData.description,
-            intro_text: enData.introText,
             title_fr: frData.title || null,
             title_de: deData.title || null,
             description_fr: frData.description || null,
             description_de: deData.description || null,
-            intro_text_fr: frData.introText || null,
-            intro_text_de: deData.introText || null,
             status,
           }),
         })
@@ -532,20 +511,6 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             rows={2}
             placeholder="A quick quiz to test your scam detection skills"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Intro Text *
-          </label>
-          <textarea
-            value={introText}
-            onChange={(e) => setIntroText(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            rows={3}
-            placeholder="Welcome! You'll see 3 images. Decide if each one is a scam or not."
-            required
           />
         </div>
       </div>
