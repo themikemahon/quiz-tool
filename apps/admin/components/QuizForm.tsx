@@ -424,13 +424,13 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
     <div className="pb-32">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Language Tabs */}
-        <div className="bg-white rounded-lg shadow">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="border-b border-gray-200">
             <nav className="flex -mb-px">
               <button
                 type="button"
                 onClick={() => setActiveLanguage('en')}
-                className={`px-6 py-3 border-b-2 font-medium text-sm ${
+                className={`px-6 py-4 border-b-2 font-medium text-base ${
                   activeLanguage === 'en'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -441,7 +441,7 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
               <button
                 type="button"
                 onClick={() => setActiveLanguage('fr')}
-                className={`px-6 py-3 border-b-2 font-medium text-sm ${
+                className={`px-6 py-4 border-b-2 font-medium text-base ${
                   activeLanguage === 'fr'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -452,7 +452,7 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
               <button
                 type="button"
                 onClick={() => setActiveLanguage('de')}
-                className={`px-6 py-3 border-b-2 font-medium text-sm ${
+                className={`px-6 py-4 border-b-2 font-medium text-base ${
                   activeLanguage === 'de'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -462,8 +462,8 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
               </button>
             </nav>
           </div>
-          <div className="p-4 bg-blue-50 border-l-4 border-blue-500 flex justify-between items-center">
-            <p className="text-sm text-blue-700">
+          <div className="p-5 bg-blue-50 border-l-4 border-blue-500 flex justify-between items-center gap-4">
+            <p className="text-base text-blue-700">
               {activeLanguage === 'en' ? (
                 <><strong>English</strong> is the primary language. Create translations in French and German tabs.</>
               ) : (
@@ -475,7 +475,7 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
                 type="button"
                 onClick={handleAutofillTranslation}
                 disabled={translating || !languageData.en.title}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
               >
                 {translating ? 'Translating...' : '🌐 Autofill Translation'}
               </button>
@@ -485,62 +485,64 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
 
         <form className="space-y-6">
           {/* Quiz Details */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
-            <h2 className="text-xl font-semibold text-gray-900">Quiz Details</h2>
+          <div className="card space-y-5">
+            <h2>Quiz Details</h2>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
             Quiz Title *
           </label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="input-field"
             placeholder="Can You Spot the Scam?"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
             Description
           </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            rows={2}
+            className="textarea-field"
+            rows={3}
             placeholder="A quick quiz to test your scam detection skills"
           />
           </div>
         </div>
 
         {/* Result Tiers */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900">Result Tiers</h2>
-          <p className="text-sm text-gray-600">
-            Define messages for different performance levels. Percentages are calculated automatically based on correct answers.
-          </p>
+        <div className="card space-y-5">
+          <div>
+            <h2>Result Tiers</h2>
+            <p className="text-sm text-gray-600 mt-2">
+              Define messages for different performance levels. Percentages are calculated automatically based on correct answers.
+            </p>
+          </div>
 
           {resultTiers.map((tier, index) => (
-            <div key={index} className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3">
+            <div key={index} className="card-section space-y-4">
             <div className="flex items-center gap-4">
               <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Tier Name *
                 </label>
                 <input
                   type="text"
                   value={tier.tier_name}
                   onChange={(e) => updateResultTier(index, 'tier_name', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="input-field"
                   placeholder="Novice"
                   required
                 />
               </div>
               <div className="w-32">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Min %
                 </label>
                 <input
@@ -549,12 +551,12 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
                   max="100"
                   value={tier.min_percentage}
                   onChange={(e) => updateResultTier(index, 'min_percentage', parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="input-field"
                   required
                 />
               </div>
               <div className="w-32">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Max %
                 </label>
                 <input
@@ -563,19 +565,19 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
                   max="100"
                   value={tier.max_percentage}
                   onChange={(e) => updateResultTier(index, 'max_percentage', parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="input-field"
                   required
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Message *
               </label>
               <textarea
                 value={tier.message}
                 onChange={(e) => updateResultTier(index, 'message', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="textarea-field"
                 rows={3}
                 placeholder="You're just getting started! Here are some tips..."
                 required
@@ -587,16 +589,14 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
 
         {/* Questions */}
         {questions.map((q, index) => (
-          <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
+          <div key={index} className="card space-y-5">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Question {index + 1}
-            </h2>
+            <h2>Question {index + 1}</h2>
             {questions.length > 1 && (
               <button
                 type="button"
                 onClick={() => removeQuestion(index)}
-                className="text-red-600 hover:text-red-700 text-sm font-medium"
+                className="btn-danger"
               >
                 Remove Question
               </button>
@@ -604,15 +604,15 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Image *
             </label>
-            <div className="space-y-2">
+            <div className="space-y-3">
               <input
                 type="url"
                 value={q.image_url}
                 onChange={(e) => updateQuestion(index, 'image_url', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="input-field"
                 placeholder="https://example.com/image.jpg or upload below"
               />
               <div className="flex items-center gap-2">
@@ -628,39 +628,39 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
                     className="hidden"
                     disabled={uploading === index}
                   />
-                  <span className="inline-block px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm">
+                  <span className="inline-block px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium">
                     {uploading === index ? 'Uploading...' : 'Upload Image'}
                   </span>
                 </label>
               </div>
               {q.image_url && (
-                <img src={q.image_url} alt="Preview" className="mt-2 max-w-xs rounded-lg border" />
+                <img src={q.image_url} alt="Preview" className="mt-2 max-w-xs rounded-lg border border-gray-200" />
               )}
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Question Text *
             </label>
             <input
               type="text"
               value={q.question_text}
               onChange={(e) => updateQuestion(index, 'question_text', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="input-field"
               placeholder="Is this a scam?"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Correct Answer *
             </label>
             <select
               value={q.correct_answer}
               onChange={(e) => updateQuestion(index, 'correct_answer', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="input-field"
               required
             >
               <option value="scam">Scam</option>
@@ -669,14 +669,14 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Explanation *
             </label>
             <textarea
               value={q.explanation}
               onChange={(e) => updateQuestion(index, 'explanation', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              rows={2}
+              className="textarea-field"
+              rows={3}
               placeholder="This is a scam because..."
               required
             />
@@ -685,11 +685,11 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
         ))}
 
         {/* Add Question Button */}
-        <div className="flex justify-center py-4">
+        <div className="flex justify-center py-6">
           <button
             type="button"
             onClick={addQuestion}
-            className="px-6 py-3 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+            className="px-8 py-4 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-colors font-medium text-base"
           >
             + Add Another Question
           </button>
@@ -699,11 +699,11 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
 
       {/* Sticky Action Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-10">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-6 py-5 flex items-center justify-between">
           <button
             type="button"
             onClick={() => router.push('/quizzes')}
-            className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+            className="btn-ghost"
           >
             Cancel
           </button>
@@ -712,7 +712,7 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
               type="button"
               onClick={(e) => handleSubmit(e, 'draft')}
               disabled={loading}
-              className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+              className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Saving...' : 'Save as Draft'}
             </button>
@@ -720,7 +720,7 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
               type="button"
               onClick={(e) => handleSubmit(e, 'published')}
               disabled={loading}
-              className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-sm transition-colors"
+              className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (mode === 'create' ? 'Publishing...' : 'Updating...') : (mode === 'create' ? 'Publish Quiz' : 'Update & Publish')}
             </button>

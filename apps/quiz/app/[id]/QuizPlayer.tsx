@@ -87,30 +87,18 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
         ? "w-full" 
         : "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4"
       }>
-        <div className={embedMode
-          ? "w-full bg-white rounded-lg shadow-md p-4 animate-fadeIn"
-          : "max-w-xl w-full bg-white rounded-lg shadow-lg p-6 animate-fadeIn"
-        }>
-          <h1 className={embedMode 
-            ? "text-xl font-bold text-gray-900 mb-2" 
-            : "text-2xl font-bold text-gray-900 mb-3"
-          }>
+        <div className={embedMode ? "w-full card-sm animate-fadeIn" : "max-w-xl w-full card animate-fadeIn"}>
+          <h1 className={embedMode ? "text-2xl font-bold text-gray-900 mb-3" : "mb-4"}>
             {quiz.title}
           </h1>
           {quiz.description && (
-            <p className={embedMode 
-              ? "text-sm text-gray-600 mb-4" 
-              : "text-base text-gray-600 mb-5"
-            }>
+            <p className={embedMode ? "text-sm text-gray-600 mb-5" : "text-base text-gray-600 mb-6"}>
               {quiz.description}
             </p>
           )}
           <button
             onClick={() => setState('question')}
-            className={embedMode
-              ? "w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition"
-              : "w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition"
-            }
+            className={embedMode ? "w-full btn-primary-sm" : "w-full btn-primary"}
           >
             {t.startQuiz}
           </button>
@@ -130,24 +118,21 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
       }>
         <div 
           key={currentQuestionIndex}
-          className={embedMode
-            ? "w-full bg-white rounded-lg shadow-md p-4 animate-fadeIn"
-            : "max-w-2xl w-full bg-white rounded-lg shadow-lg p-6 animate-fadeIn"
-          }
+          className={embedMode ? "w-full card-sm animate-fadeIn" : "max-w-2xl w-full card animate-fadeIn"}
         >
           {/* Progress */}
-          <div className={embedMode ? "mb-3" : "mb-4"}>
+          <div className={embedMode ? "mb-5" : "mb-6"}>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-xs font-medium text-gray-600">
+              <span className="text-sm font-medium text-gray-600">
                 {t.question} {currentQuestionIndex + 1} {t.of} {totalQuestions}
               </span>
-              <span className="text-xs font-medium text-gray-600">
+              <span className="text-sm font-medium text-gray-600">
                 {Math.round(((currentQuestionIndex + 1) / totalQuestions) * 100)}%
               </span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-1.5">
+            <div className="w-full bg-gray-200 rounded-full h-2">
               <div
-                className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                 style={{
                   width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%`,
                 }}
@@ -156,19 +141,13 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
           </div>
 
           {/* Question */}
-          <h2 className={embedMode 
-            ? "text-base font-bold text-gray-900 mb-3" 
-            : "text-lg font-bold text-gray-900 mb-4"
-          }>
+          <h2 className={embedMode ? "text-xl font-bold text-gray-900 mb-4" : "mb-5"}>
             {currentQuestion.question_text}
           </h2>
 
           {/* Image */}
           {currentQuestion.image_url && (
-            <div className={embedMode
-              ? "mb-3 rounded-md overflow-hidden border border-gray-200"
-              : "mb-4 rounded-md overflow-hidden border border-gray-200"
-            }>
+            <div className={embedMode ? "mb-5 rounded-lg overflow-hidden border border-gray-200" : "mb-6 rounded-lg overflow-hidden border border-gray-200"}>
               <img
                 src={currentQuestion.image_url}
                 alt="Question"
@@ -179,47 +158,33 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
 
           {/* Answer Buttons */}
           {!showExplanation ? (
-            <div className={embedMode ? "grid grid-cols-2 gap-2 animate-fadeIn" : "grid grid-cols-2 gap-2 animate-fadeIn"}>
+            <div className={embedMode ? "grid grid-cols-2 gap-3 animate-fadeIn" : "grid grid-cols-2 gap-4 animate-fadeIn"}>
               <button
                 onClick={() => handleAnswer('scam')}
-                className={embedMode
-                  ? "bg-red-100 text-red-700 px-3 py-2 rounded-md text-sm font-semibold hover:bg-red-200 transition border border-red-300"
-                  : "bg-red-100 text-red-700 px-3 py-2 rounded-md text-sm font-semibold hover:bg-red-200 transition border border-red-300"
-                }
+                className={embedMode ? "btn-answer-scam-sm" : "btn-answer-scam"}
               >
                 🚨 {t.scam}
               </button>
               <button
                 onClick={() => handleAnswer('not-scam')}
-                className={embedMode
-                  ? "bg-green-100 text-green-700 px-3 py-2 rounded-md text-sm font-semibold hover:bg-green-200 transition border border-green-300"
-                  : "bg-green-100 text-green-700 px-3 py-2 rounded-md text-sm font-semibold hover:bg-green-200 transition border border-green-300"
-                }
+                className={embedMode ? "btn-answer-safe-sm" : "btn-answer-safe"}
               >
                 ✅ {t.notScam}
               </button>
             </div>
           ) : (
-            <div className={embedMode ? "space-y-2 animate-fadeIn" : "space-y-3 animate-fadeIn"}>
+            <div className={embedMode ? "space-y-3 animate-fadeIn" : "space-y-4 animate-fadeIn"}>
               {/* Result */}
-              <div
-                className={embedMode
-                  ? `p-3 rounded-md ${isCorrect ? 'bg-green-50 border border-green-300' : 'bg-red-50 border border-red-300'}`
-                  : `p-4 rounded-md ${isCorrect ? 'bg-green-50 border border-green-300' : 'bg-red-50 border border-red-300'}`
-                }
-              >
-                <div className={embedMode 
-                  ? "flex items-center gap-2 mb-2" 
-                  : "flex items-center gap-2 mb-2"
-                }>
-                  <span className="text-lg">
+              <div className={embedMode ? (isCorrect ? 'result-card-success-sm' : 'result-card-error-sm') : (isCorrect ? 'result-card-success' : 'result-card-error')}>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className={embedMode ? "text-xl" : "text-2xl"}>
                     {isCorrect ? '✅' : '❌'}
                   </span>
-                  <span className={`text-base font-bold ${isCorrect ? 'text-green-700' : 'text-red-700'}`}>
+                  <span className={`font-bold ${isCorrect ? 'text-green-700' : 'text-red-700'} ${embedMode ? 'text-lg' : 'text-xl'}`}>
                     {isCorrect ? t.correct : t.incorrect}
                   </span>
                 </div>
-                <p className="text-sm text-gray-700">
+                <p className={embedMode ? "text-sm text-gray-700 leading-relaxed" : "text-base text-gray-700 leading-relaxed"}>
                   {currentQuestion.explanation}
                 </p>
               </div>
@@ -227,10 +192,7 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
               {/* Next Button */}
               <button
                 onClick={handleNext}
-                className={embedMode
-                  ? "w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition"
-                  : "w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition"
-                }
+                className={embedMode ? "w-full btn-primary-sm" : "w-full btn-primary"}
               >
                 {currentQuestionIndex < totalQuestions - 1 ? t.nextQuestion : t.seeResults}
               </button>
@@ -249,65 +211,44 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
       ? "w-full" 
       : "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4"
     }>
-      <div className={embedMode
-        ? "w-full bg-white rounded-lg shadow-md p-4 animate-fadeIn"
-        : "max-w-xl w-full bg-white rounded-lg shadow-lg p-6 animate-fadeIn"
-      }>
-        <div className={embedMode ? "text-center mb-4" : "text-center mb-5"}>
-          <h1 className={embedMode 
-            ? "text-xl font-bold text-gray-900 mb-2" 
-            : "text-2xl font-bold text-gray-900 mb-3"
-          }>
+      <div className={embedMode ? "w-full card-sm animate-fadeIn" : "max-w-xl w-full card animate-fadeIn"}>
+        <div className={embedMode ? "text-center mb-6" : "text-center mb-8"}>
+          <h1 className={embedMode ? "text-2xl font-bold text-gray-900 mb-4" : "mb-5"}>
             {t.quizComplete}
           </h1>
-          <div className={embedMode
-            ? "inline-block bg-blue-100 rounded-full px-4 py-2 mb-2"
-            : "inline-block bg-blue-100 rounded-full px-6 py-3 mb-3"
-          }>
-            <span className={embedMode 
-              ? "text-2xl font-bold text-blue-600" 
-              : "text-3xl font-bold text-blue-600"
-            }>
+          <div className={embedMode ? "inline-block bg-blue-100 rounded-full px-6 py-3 mb-3" : "inline-block bg-blue-100 rounded-full px-8 py-4 mb-4"}>
+            <span className={embedMode ? "text-3xl font-bold text-blue-600" : "text-4xl font-bold text-blue-600"}>
               {results.correct}/{results.total}
             </span>
           </div>
-          <p className={embedMode 
-            ? "text-sm text-gray-600" 
-            : "text-base text-gray-600"
-          }>
+          <p className={embedMode ? "text-base text-gray-600" : "text-lg text-gray-600"}>
             {t.youScored} {results.percentage}%
           </p>
         </div>
 
         {/* Tier Result */}
         {results.tier && (
-          <div className={embedMode
-            ? "bg-gradient-to-r from-blue-50 to-indigo-50 rounded-md p-3 mb-4 border border-blue-200"
-            : "bg-gradient-to-r from-blue-50 to-indigo-50 rounded-md p-4 mb-5 border border-blue-200"
-          }>
-            <h2 className={embedMode 
-              ? "text-base font-bold text-gray-900 mb-2" 
-              : "text-lg font-bold text-gray-900 mb-2"
-            }>
+          <div className={embedMode ? "bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-5 mb-6 border-2 border-blue-200" : "bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 mb-8 border-2 border-blue-200"}>
+            <h2 className={embedMode ? "text-xl font-bold text-gray-900 mb-3" : "mb-3"}>
               {results.tier.tier_name}
             </h2>
-            <p className="text-sm text-gray-700 whitespace-pre-line">
+            <p className={embedMode ? "text-sm text-gray-700 whitespace-pre-line leading-relaxed" : "text-base text-gray-700 whitespace-pre-line leading-relaxed"}>
               {results.tier.message}
             </p>
           </div>
         )}
 
         {/* Actions */}
-        <div className="space-y-2">
+        <div className={embedMode ? "space-y-2" : "space-y-3"}>
           <button
             onClick={handleRestart}
-            className="w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition"
+            className={embedMode ? "w-full btn-primary-sm" : "w-full btn-primary"}
           >
             {t.takeQuizAgain}
           </button>
           <button
             onClick={() => window.location.href = '/'}
-            className="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-md text-sm font-semibold hover:bg-gray-200 transition"
+            className={embedMode ? "w-full btn-secondary-sm" : "w-full btn-secondary"}
           >
             {t.backToHome}
           </button>
