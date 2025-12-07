@@ -86,8 +86,8 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
         : "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4"
       }>
         <div className={embedMode
-          ? "w-full bg-white rounded-lg shadow-md p-4"
-          : "max-w-xl w-full bg-white rounded-lg shadow-lg p-6"
+          ? "w-full bg-white rounded-lg shadow-md p-4 animate-fadeIn"
+          : "max-w-xl w-full bg-white rounded-lg shadow-lg p-6 animate-fadeIn"
         }>
           <h1 className={embedMode 
             ? "text-xl font-bold text-gray-900 mb-2" 
@@ -126,10 +126,13 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
         ? "w-full" 
         : "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4"
       }>
-        <div className={embedMode
-          ? "w-full bg-white rounded-lg shadow-md p-4"
-          : "max-w-2xl w-full bg-white rounded-lg shadow-lg p-6"
-        }>
+        <div 
+          key={currentQuestionIndex}
+          className={embedMode
+            ? "w-full bg-white rounded-lg shadow-md p-4 animate-fadeIn"
+            : "max-w-2xl w-full bg-white rounded-lg shadow-lg p-6 animate-fadeIn"
+          }
+        >
           {/* Progress */}
           <div className={embedMode ? "mb-3" : "mb-4"}>
             <div className="flex justify-between items-center mb-2">
@@ -174,7 +177,7 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
 
           {/* Answer Buttons */}
           {!showExplanation ? (
-            <div className={embedMode ? "grid grid-cols-2 gap-2" : "grid grid-cols-2 gap-2"}>
+            <div className={embedMode ? "grid grid-cols-2 gap-2 animate-fadeIn" : "grid grid-cols-2 gap-2 animate-fadeIn"}>
               <button
                 onClick={() => handleAnswer('scam')}
                 className={embedMode
@@ -195,7 +198,7 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
               </button>
             </div>
           ) : (
-            <div className={embedMode ? "space-y-2" : "space-y-3"}>
+            <div className={embedMode ? "space-y-2 animate-fadeIn" : "space-y-3 animate-fadeIn"}>
               {/* Result */}
               <div
                 className={embedMode
@@ -245,8 +248,8 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
       : "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4"
     }>
       <div className={embedMode
-        ? "w-full bg-white rounded-lg shadow-md p-4"
-        : "max-w-xl w-full bg-white rounded-lg shadow-lg p-6"
+        ? "w-full bg-white rounded-lg shadow-md p-4 animate-fadeIn"
+        : "max-w-xl w-full bg-white rounded-lg shadow-lg p-6 animate-fadeIn"
       }>
         <div className={embedMode ? "text-center mb-4" : "text-center mb-5"}>
           <h1 className={embedMode 
