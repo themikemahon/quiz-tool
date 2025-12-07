@@ -132,7 +132,7 @@ export default function QuizList() {
                       : 'bg-gray-100 text-gray-800'
                   }`}
                 >
-                  {quiz.status}
+                  {quiz.status === 'published' ? 'Published' : 'Draft'}
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
