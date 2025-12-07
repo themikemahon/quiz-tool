@@ -118,7 +118,7 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
             onClick={() => setState('question')}
             className={embedMode
               ? "w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition"
-              : "w-full bg-blue-600 text-white px-6 py-3 rounded-md text-base font-semibold hover:bg-blue-700 transition"
+              : "w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition"
             }
           >
             Start Quiz
@@ -185,12 +185,12 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
 
           {/* Answer Buttons */}
           {!showExplanation ? (
-            <div className={embedMode ? "grid grid-cols-2 gap-2" : "grid grid-cols-2 gap-3"}>
+            <div className={embedMode ? "grid grid-cols-2 gap-2" : "grid grid-cols-2 gap-2"}>
               <button
                 onClick={() => handleAnswer('scam')}
                 className={embedMode
                   ? "bg-red-100 text-red-700 px-3 py-2 rounded-md text-sm font-semibold hover:bg-red-200 transition border border-red-300"
-                  : "bg-red-100 text-red-700 px-4 py-3 rounded-md text-base font-semibold hover:bg-red-200 transition border border-red-300"
+                  : "bg-red-100 text-red-700 px-3 py-2 rounded-md text-sm font-semibold hover:bg-red-200 transition border border-red-300"
                 }
               >
                 🚨 Scam
@@ -199,7 +199,7 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
                 onClick={() => handleAnswer('not-scam')}
                 className={embedMode
                   ? "bg-green-100 text-green-700 px-3 py-2 rounded-md text-sm font-semibold hover:bg-green-200 transition border border-green-300"
-                  : "bg-green-100 text-green-700 px-4 py-3 rounded-md text-base font-semibold hover:bg-green-200 transition border border-green-300"
+                  : "bg-green-100 text-green-700 px-3 py-2 rounded-md text-sm font-semibold hover:bg-green-200 transition border border-green-300"
                 }
               >
                 ✅ Not a Scam
@@ -235,7 +235,7 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
                 onClick={handleNext}
                 className={embedMode
                   ? "w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition"
-                  : "w-full bg-blue-600 text-white px-6 py-3 rounded-md text-base font-semibold hover:bg-blue-700 transition"
+                  : "w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition"
                 }
               >
                 {currentQuestionIndex < totalQuestions - 1 ? 'Next Question' : 'See Results'}
@@ -304,22 +304,16 @@ export default function QuizPlayer({ quiz, embedMode = false }: QuizPlayerProps)
         )}
 
         {/* Actions */}
-        <div className={embedMode ? "space-y-2" : "space-y-2"}>
+        <div className="space-y-2">
           <button
             onClick={handleRestart}
-            className={embedMode
-              ? "w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition"
-              : "w-full bg-blue-600 text-white px-6 py-3 rounded-md text-base font-semibold hover:bg-blue-700 transition"
-            }
+            className="w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition"
           >
             Take Quiz Again
           </button>
           <button
             onClick={() => window.location.href = '/'}
-            className={embedMode
-              ? "w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-md text-sm font-semibold hover:bg-gray-200 transition"
-              : "w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-md text-base font-semibold hover:bg-gray-200 transition"
-            }
+            className="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-md text-sm font-semibold hover:bg-gray-200 transition"
           >
             Back to Home
           </button>
