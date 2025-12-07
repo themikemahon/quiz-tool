@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// Using LibreTranslate (free, open-source translation API)
-// You can self-host or use their public instance
-const TRANSLATE_API_URL = process.env.TRANSLATE_API_URL || 'https://libretranslate.com/translate'
+// Using MyMemory Translation API (free, no API key required for basic usage)
+// Limit: 1000 words/day per IP without API key
+// You can get a free API key at https://mymemory.translated.net/doc/keygen.php for higher limits
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Map our language codes to LibreTranslate codes
+    // Map our language codes
     const langMap: Record<string, string> = {
       en: 'en',
       fr: 'fr',
@@ -30,18 +30,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Call translation API
-    const response = await fetch(TRANSLATE_API_URL, {
-      method: 'POST',
+    // Encode text for URL
+    const encodedText = encodeURIComponent(text)
+    const langPair = `en|${targetLang}`
+    
+    // Call MyMemory Translation API
+    const apiUrl = `https://api.mymemory.translated.net/get?q=${encodedText}&langpair=${langPair}`
+    
+    const response = await fetch(apiUrl, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        q: text,
-        source: 'en',
-        target: targetLang,
-        format: 'text',
-      }),
     })
 
     if (!response.ok) {
@@ -50,11 +50,15 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json()
     
-    return NextResponse.json({ translatedText: data.translatedText })
+    if (data.responseStatus !== 200) {
+      throw new Error(data.responseDetails || 'Translation failed')
+    }
+    
+    return NextResponse.json({ translatedText: data.responseData.translatedText })
   } catch (error) {
     console.error('Translation error:', error)
     return NextResponse.json(
-      { error: 'Translation failed' },
+      { error: 'Translation failed. Please try again or enter translations manually.' },
       { status: 500 }
     )
   }
