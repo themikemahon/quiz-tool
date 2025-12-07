@@ -4,8 +4,10 @@ import type { Quiz } from '@quiz-tool/shared/types'
 
 export async function GET() {
   try {
+    // Only return parent quizzes (English, no parent_quiz_id)
     const { rows } = await sql<Quiz>`
       SELECT * FROM quizzes 
+      WHERE parent_quiz_id IS NULL
       ORDER BY updated_at DESC
     `
     return NextResponse.json(rows)

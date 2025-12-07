@@ -233,8 +233,6 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
           resultTiers: translatedTiers,
         }
       }))
-      
-      alert('Translation complete! Please review and edit as needed.')
     } catch (error) {
       console.error('Autofill translation error:', error)
       alert('Translation failed. Please try again.')
