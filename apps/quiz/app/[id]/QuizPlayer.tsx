@@ -52,11 +52,14 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
 
   const handleNext = () => {
     setShowExplanation(false)
-    if (currentQuestionIndex < totalQuestions - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1)
-    } else {
-      setState('result')
-    }
+    // Wait for fade out animation before changing question
+    setTimeout(() => {
+      if (currentQuestionIndex < totalQuestions - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1)
+      } else {
+        setState('result')
+      }
+    }, 400)
   }
 
   const calculateResults = () => {
@@ -116,10 +119,7 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
         ? "w-full" 
         : "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4"
       }>
-        <div 
-          key={currentQuestionIndex}
-          className={embedMode ? "w-full card-sm animate-fadeIn" : "max-w-2xl w-full card animate-fadeIn"}
-        >
+        <div className={embedMode ? "w-full card-sm transition-all duration-500 ease-in-out" : "max-w-2xl w-full card transition-all duration-500 ease-in-out"}>
           {/* Progress */}
           <div className={embedMode ? "mb-5" : "mb-6"}>
             <div className="flex justify-between items-center mb-2">
@@ -132,7 +132,7 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
                 style={{
                   width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%`,
                 }}
@@ -141,63 +141,78 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
           </div>
 
           {/* Question */}
-          <h2 className={embedMode ? "text-xl font-bold text-gray-900 mb-4" : "mb-5"}>
-            {currentQuestion.question_text}
-          </h2>
+          <div className="transition-opacity duration-500">
+            <h2 key={`q-${currentQuestionIndex}`} className={`animate-fadeIn ${embedMode ? "text-xl font-bold text-gray-900 mb-4" : "mb-5"}`}>
+              {currentQuestion.question_text}
+            </h2>
 
-          {/* Image */}
-          {currentQuestion.image_url && (
-            <div className={embedMode ? "mb-5 rounded-lg overflow-hidden border border-gray-200" : "mb-6 rounded-lg overflow-hidden border border-gray-200"}>
-              <img
-                src={currentQuestion.image_url}
-                alt="Question"
-                className="w-full h-auto"
-              />
-            </div>
-          )}
+            {/* Image */}
+            {currentQuestion.image_url && (
+              <div className={embedMode ? "mb-5 rounded-lg overflow-hidden border border-gray-200 relative" : "mb-6 rounded-lg overflow-hidden border border-gray-200 relative"}>
+                <img
+                  key={currentQuestion.image_url}
+                  src={currentQuestion.image_url}
+                  alt="Question"
+                  className="w-full h-auto animate-fadeIn"
+                />
+              </div>
+            )}
+          </div>
 
           {/* Answer Buttons */}
-          {!showExplanation ? (
-            <div className={embedMode ? "grid grid-cols-2 gap-3 animate-fadeIn" : "grid grid-cols-2 gap-4 animate-fadeIn"}>
-              <button
-                onClick={() => handleAnswer('scam')}
-                className={embedMode ? "btn-answer-scam-sm" : "btn-answer-scam"}
+          <div className="grid transition-all duration-500 ease-in-out" style={{ gridTemplateRows: showExplanation ? '0fr' : '1fr' }}>
+            <div className="overflow-hidden">
+              <div 
+                key={`a-${currentQuestionIndex}`} 
+                className={`transition-opacity duration-300 ${showExplanation ? 'opacity-0' : 'opacity-100'} ${embedMode ? "grid grid-cols-2 gap-3" : "grid grid-cols-2 gap-4"}`}
               >
-                🚨 {t.scam}
-              </button>
-              <button
-                onClick={() => handleAnswer('not-scam')}
-                className={embedMode ? "btn-answer-safe-sm" : "btn-answer-safe"}
-              >
-                ✅ {t.notScam}
-              </button>
-            </div>
-          ) : (
-            <div className={embedMode ? "space-y-3 animate-fadeIn" : "space-y-4 animate-fadeIn"}>
-              {/* Result */}
-              <div className={embedMode ? (isCorrect ? 'result-card-success-sm' : 'result-card-error-sm') : (isCorrect ? 'result-card-success' : 'result-card-error')}>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className={embedMode ? "text-xl" : "text-2xl"}>
-                    {isCorrect ? '✅' : '❌'}
-                  </span>
-                  <span className={`font-bold ${isCorrect ? 'text-green-700' : 'text-red-700'} ${embedMode ? 'text-lg' : 'text-xl'}`}>
-                    {isCorrect ? t.correct : t.incorrect}
-                  </span>
-                </div>
-                <p className={embedMode ? "text-sm text-gray-700 leading-relaxed" : "text-base text-gray-700 leading-relaxed"}>
-                  {currentQuestion.explanation}
-                </p>
+                <button
+                  onClick={() => handleAnswer('scam')}
+                  className={embedMode ? "btn-answer-scam-sm" : "btn-answer-scam"}
+                >
+                  🚨 {t.scam}
+                </button>
+                <button
+                  onClick={() => handleAnswer('not-scam')}
+                  className={embedMode ? "btn-answer-safe-sm" : "btn-answer-safe"}
+                >
+                  ✅ {t.notScam}
+                </button>
               </div>
-
-              {/* Next Button */}
-              <button
-                onClick={handleNext}
-                className={embedMode ? "w-full btn-primary-sm" : "w-full btn-primary"}
-              >
-                {currentQuestionIndex < totalQuestions - 1 ? t.nextQuestion : t.seeResults}
-              </button>
             </div>
-          )}
+          </div>
+
+          {/* Explanation */}
+          <div className="grid transition-all duration-500 ease-in-out delay-100" style={{ gridTemplateRows: showExplanation ? '1fr' : '0fr' }}>
+            <div className="overflow-hidden">
+              <div 
+                className={`transition-opacity duration-300 ${showExplanation ? 'opacity-100 delay-200' : 'opacity-0'} ${embedMode ? "space-y-3" : "space-y-4"}`}
+              >
+                {/* Result */}
+                <div className={embedMode ? (isCorrect ? 'result-card-success-sm' : 'result-card-error-sm') : (isCorrect ? 'result-card-success' : 'result-card-error')}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className={embedMode ? "text-xl" : "text-2xl"}>
+                      {isCorrect ? '✅' : '❌'}
+                    </span>
+                    <span className={`font-bold ${isCorrect ? 'text-green-700' : 'text-red-700'} ${embedMode ? 'text-lg' : 'text-xl'}`}>
+                      {isCorrect ? t.correct : t.incorrect}
+                    </span>
+                  </div>
+                  <p className={embedMode ? "text-sm text-gray-700 leading-relaxed" : "text-base text-gray-700 leading-relaxed"}>
+                    {currentQuestion.explanation}
+                  </p>
+                </div>
+
+                {/* Next Button */}
+                <button
+                  onClick={handleNext}
+                  className={embedMode ? "w-full btn-primary-sm" : "w-full btn-primary"}
+                >
+                  {currentQuestionIndex < totalQuestions - 1 ? t.nextQuestion : t.seeResults}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )

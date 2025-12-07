@@ -1,6 +1,7 @@
 import { sql } from '@vercel/postgres'
 import QuizPlayer from './QuizPlayer'
 import { notFound } from 'next/navigation'
+import { Metadata } from 'next'
 
 // Disable caching for quiz player
 export const dynamic = 'force-dynamic'
@@ -92,6 +93,27 @@ async function getQuiz(id: string, language?: string) {
   } catch (error) {
     console.error('Error fetching quiz:', error)
     return null
+  }
+}
+
+export async function generateMetadata({ 
+  params,
+  searchParams 
+}: { 
+  params: { id: string }
+  searchParams: { lang?: string }
+}): Promise<Metadata> {
+  const quiz = await getQuiz(params.id, searchParams.lang)
+
+  if (!quiz) {
+    return {
+      title: 'Quiz Not Found',
+    }
+  }
+
+  return {
+    title: quiz.title,
+    description: quiz.description || undefined,
   }
 }
 

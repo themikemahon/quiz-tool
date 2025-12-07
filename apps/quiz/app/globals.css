@@ -14,36 +14,36 @@
 @layer components {
   /* Button Hierarchy - Standard */
   .btn-primary {
-    @apply px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors text-base;
+    @apply px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity text-base;
   }
   
   .btn-secondary {
-    @apply px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors text-base;
+    @apply px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:opacity-80 transition-opacity text-base;
   }
   
   .btn-answer-scam {
-    @apply bg-red-100 text-red-700 px-6 py-3 rounded-lg font-semibold hover:bg-red-200 transition-colors border border-red-300 text-base;
+    @apply bg-red-100 text-red-700 px-6 py-3 rounded-lg font-semibold hover:opacity-80 transition-opacity border border-red-300 text-base;
   }
   
   .btn-answer-safe {
-    @apply bg-green-100 text-green-700 px-6 py-3 rounded-lg font-semibold hover:bg-green-200 transition-colors border border-green-300 text-base;
+    @apply bg-green-100 text-green-700 px-6 py-3 rounded-lg font-semibold hover:opacity-80 transition-opacity border border-green-300 text-base;
   }
   
   /* Button Hierarchy - Embed Mode (Compact) */
   .btn-primary-sm {
-    @apply px-4 py-2 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700 transition-colors text-sm;
+    @apply px-4 py-2 bg-blue-600 text-white rounded-md font-semibold hover:opacity-90 transition-opacity text-sm;
   }
   
   .btn-secondary-sm {
-    @apply px-4 py-2 bg-gray-100 text-gray-700 rounded-md font-medium hover:bg-gray-200 transition-colors text-sm;
+    @apply px-4 py-2 bg-gray-100 text-gray-700 rounded-md font-medium hover:opacity-80 transition-opacity text-sm;
   }
   
   .btn-answer-scam-sm {
-    @apply bg-red-100 text-red-700 px-4 py-2 rounded-md font-semibold hover:bg-red-200 transition-colors border border-red-300 text-sm;
+    @apply bg-red-100 text-red-700 px-4 py-2 rounded-md font-semibold hover:opacity-80 transition-opacity border border-red-300 text-sm;
   }
   
   .btn-answer-safe-sm {
-    @apply bg-green-100 text-green-700 px-4 py-2 rounded-md font-semibold hover:bg-green-200 transition-colors border border-green-300 text-sm;
+    @apply bg-green-100 text-green-700 px-4 py-2 rounded-md font-semibold hover:opacity-80 transition-opacity border border-green-300 text-sm;
   }
   
   /* Card Styles */
