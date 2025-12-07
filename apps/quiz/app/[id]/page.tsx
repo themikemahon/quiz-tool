@@ -43,54 +43,53 @@ async function getQuiz(id: string, language?: string) {
     const quizId = parseInt(id)
     const lang = language || 'en'
 
-    // First, try to get the quiz in the requested language
-    // If id is provided and language is not 'en', look for translation
-    let targetQuizId = quizId
-    
-    if (lang !== 'en') {
-      // Look for a translation of this quiz
-      const { rows: translationRows } = await sql<Quiz>`
-        SELECT * FROM quizzes 
-        WHERE parent_quiz_id = ${quizId} 
-        AND language = ${lang}
-        AND status = 'published'
-      `
-      
-      if (translationRows.length > 0) {
-        targetQuizId = translationRows[0].id
-      } else {
-        // No translation found, fall back to English
-        targetQuizId = quizId
-      }
-    }
-
     // Get quiz
     const { rows: quizRows } = await sql<Quiz>`
-      SELECT * FROM quizzes WHERE id = ${targetQuizId} AND status = 'published'
+      SELECT * FROM quizzes WHERE id = ${quizId} AND status = 'published'
     `
 
     if (quizRows.length === 0) {
       return null
     }
 
+    const quiz = quizRows[0]
+
     // Get questions
     const { rows: questionRows } = await sql<Question>`
       SELECT * FROM questions 
-      WHERE quiz_id = ${targetQuizId}
+      WHERE quiz_id = ${quizId}
       ORDER BY order_index ASC
     `
 
     // Get result tiers
     const { rows: tierRows } = await sql<ResultTier>`
       SELECT * FROM result_tiers
-      WHERE quiz_id = ${targetQuizId}
+      WHERE quiz_id = ${quizId}
       ORDER BY order_index ASC
     `
 
+    // Map to the correct language
+    const getTranslatedField = (row: any, field: string) => {
+      if (lang === 'fr' && row[`${field}_fr`]) return row[`${field}_fr`]
+      if (lang === 'de' && row[`${field}_de`]) return row[`${field}_de`]
+      return row[field]
+    }
+
     return {
-      ...quizRows[0],
-      questions: questionRows,
-      result_tiers: tierRows,
+      ...quiz,
+      title: getTranslatedField(quiz, 'title'),
+      description: getTranslatedField(quiz, 'description'),
+      intro_text: getTranslatedField(quiz, 'intro_text'),
+      questions: questionRows.map(q => ({
+        ...q,
+        question_text: getTranslatedField(q, 'question_text'),
+        explanation: getTranslatedField(q, 'explanation'),
+      })),
+      result_tiers: tierRows.map(t => ({
+        ...t,
+        tier_name: getTranslatedField(t, 'tier_name'),
+        message: getTranslatedField(t, 'message'),
+      })),
     }
   } catch (error) {
     console.error('Error fetching quiz:', error)

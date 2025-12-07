@@ -4,10 +4,8 @@ import type { Quiz } from '@quiz-tool/shared/types'
 
 export async function GET() {
   try {
-    // Only return parent quizzes (English, no parent_quiz_id)
     const { rows } = await sql<Quiz>`
       SELECT * FROM quizzes 
-      WHERE parent_quiz_id IS NULL
       ORDER BY updated_at DESC
     `
     return NextResponse.json(rows)
@@ -23,18 +21,28 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { title, description, intro_text, template_type, status, language, parent_quiz_id } = body
+    const { 
+      title, description, intro_text, template_type, status,
+      title_fr, title_de, description_fr, description_de, intro_text_fr, intro_text_de
+    } = body
 
     const { rows } = await sql<Quiz>`
-      INSERT INTO quizzes (title, description, intro_text, template_type, status, language, parent_quiz_id)
+      INSERT INTO quizzes (
+        title, description, intro_text, template_type, status,
+        title_fr, title_de, description_fr, description_de, intro_text_fr, intro_text_de
+      )
       VALUES (
         ${title}, 
         ${description}, 
         ${intro_text}, 
         ${template_type || 'scam-detector'}, 
         ${status || 'draft'},
-        ${language || 'en'},
-        ${parent_quiz_id || null}
+        ${title_fr || null},
+        ${title_de || null},
+        ${description_fr || null},
+        ${description_de || null},
+        ${intro_text_fr || null},
+        ${intro_text_de || null}
       )
       RETURNING *
     `
