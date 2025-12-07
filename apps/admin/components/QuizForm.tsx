@@ -32,42 +32,115 @@ interface QuizFormProps {
   }
 }
 
+type Language = 'en' | 'fr' | 'de'
+
+interface LanguageData {
+  title: string
+  description: string
+  introText: string
+  questions: Question[]
+  resultTiers: ResultTier[]
+}
+
 export default function QuizForm({ mode, initialData }: QuizFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState<number | null>(null)
+  const [activeLanguage, setActiveLanguage] = useState<Language>('en')
+  const [translating, setTranslating] = useState(false)
   
-  const [title, setTitle] = useState(initialData?.title || '')
-  const [description, setDescription] = useState(initialData?.description || '')
-  const [introText, setIntroText] = useState(initialData?.intro_text || '')
+  // Initialize language data
+  const defaultQuestions: Question[] = [
+    { question_text: '', image_url: '', correct_answer: 'scam', explanation: '' },
+    { question_text: '', image_url: '', correct_answer: 'scam', explanation: '' },
+    { question_text: '', image_url: '', correct_answer: 'scam', explanation: '' },
+  ]
   
-  const [questions, setQuestions] = useState<Question[]>(
-    initialData?.questions.map(q => ({
-      id: q.id,
-      question_text: q.question_text,
-      image_url: q.image_url || '',
-      correct_answer: q.correct_answer,
-      explanation: q.explanation || '',
-    })) || [
-      { question_text: '', image_url: '', correct_answer: 'scam', explanation: '' },
-      { question_text: '', image_url: '', correct_answer: 'scam', explanation: '' },
-      { question_text: '', image_url: '', correct_answer: 'scam', explanation: '' },
-    ]
-  )
-
-  const [resultTiers, setResultTiers] = useState<ResultTier[]>(
-    initialData?.result_tiers.map(t => ({
-      id: t.id,
-      tier_name: t.tier_name,
-      min_percentage: t.min_percentage,
-      max_percentage: t.max_percentage,
-      message: t.message,
-    })) || [
-      { tier_name: 'Novice', min_percentage: 0, max_percentage: 33, message: '' },
-      { tier_name: 'Competent', min_percentage: 34, max_percentage: 66, message: '' },
-      { tier_name: 'Expert', min_percentage: 67, max_percentage: 100, message: '' },
-    ]
-  )
+  const defaultTiers: ResultTier[] = [
+    { tier_name: 'Novice', min_percentage: 0, max_percentage: 33, message: '' },
+    { tier_name: 'Competent', min_percentage: 34, max_percentage: 66, message: '' },
+    { tier_name: 'Expert', min_percentage: 67, max_percentage: 100, message: '' },
+  ]
+  
+  const [languageData, setLanguageData] = useState<Record<Language, LanguageData>>({
+    en: {
+      title: initialData?.title || '',
+      description: initialData?.description || '',
+      introText: initialData?.intro_text || '',
+      questions: initialData?.questions.map(q => ({
+        id: q.id,
+        question_text: q.question_text,
+        image_url: q.image_url || '',
+        correct_answer: q.correct_answer,
+        explanation: q.explanation || '',
+      })) || defaultQuestions,
+      resultTiers: initialData?.result_tiers.map(t => ({
+        id: t.id,
+        tier_name: t.tier_name,
+        min_percentage: t.min_percentage,
+        max_percentage: t.max_percentage,
+        message: t.message,
+      })) || defaultTiers,
+    },
+    fr: {
+      title: '',
+      description: '',
+      introText: '',
+      questions: [],
+      resultTiers: [],
+    },
+    de: {
+      title: '',
+      description: '',
+      introText: '',
+      questions: [],
+      resultTiers: [],
+    },
+  })
+  
+  // Get current language data
+  const currentData = languageData[activeLanguage]
+  const title = currentData.title
+  const description = currentData.description
+  const introText = currentData.introText
+  const questions = currentData.questions
+  const resultTiers = currentData.resultTiers
+  
+  // Update functions that work with current language
+  const setTitle = (value: string) => {
+    setLanguageData(prev => ({
+      ...prev,
+      [activeLanguage]: { ...prev[activeLanguage], title: value }
+    }))
+  }
+  
+  const setDescription = (value: string) => {
+    setLanguageData(prev => ({
+      ...prev,
+      [activeLanguage]: { ...prev[activeLanguage], description: value }
+    }))
+  }
+  
+  const setIntroText = (value: string) => {
+    setLanguageData(prev => ({
+      ...prev,
+      [activeLanguage]: { ...prev[activeLanguage], introText: value }
+    }))
+  }
+  
+  const setQuestions = (value: Question[]) => {
+    setLanguageData(prev => ({
+      ...prev,
+      [activeLanguage]: { ...prev[activeLanguage], questions: value }
+    }))
+  }
+  
+  const setResultTiers = (value: ResultTier[]) => {
+    setLanguageData(prev => ({
+      ...prev,
+      [activeLanguage]: { ...prev[activeLanguage], resultTiers: value }
+    }))
+  }
 
   const updateQuestion = (index: number, field: keyof Question, value: string) => {
     const updated = [...questions]
@@ -91,6 +164,83 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
     const updated = [...resultTiers]
     updated[index] = { ...updated[index], [field]: value }
     setResultTiers(updated)
+  }
+  
+  const translateText = async (text: string, targetLang: Language): Promise<string> => {
+    try {
+      const res = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, targetLanguage: targetLang }),
+      })
+      
+      if (!res.ok) throw new Error('Translation failed')
+      
+      const data = await res.json()
+      return data.translatedText
+    } catch (error) {
+      console.error('Translation error:', error)
+      return text // Return original if translation fails
+    }
+  }
+  
+  const handleAutofillTranslation = async () => {
+    if (activeLanguage === 'en') return
+    
+    setTranslating(true)
+    
+    try {
+      const englishData = languageData.en
+      
+      // Translate basic fields
+      const translatedTitle = await translateText(englishData.title, activeLanguage)
+      const translatedDescription = await translateText(englishData.description, activeLanguage)
+      const translatedIntroText = await translateText(englishData.introText, activeLanguage)
+      
+      // Translate questions
+      const translatedQuestions: Question[] = []
+      for (const q of englishData.questions) {
+        const translatedQuestion = await translateText(q.question_text, activeLanguage)
+        const translatedExplanation = await translateText(q.explanation, activeLanguage)
+        translatedQuestions.push({
+          ...q,
+          question_text: translatedQuestion,
+          explanation: translatedExplanation,
+          // Keep image_url and correct_answer the same
+        })
+      }
+      
+      // Translate result tiers
+      const translatedTiers: ResultTier[] = []
+      for (const tier of englishData.resultTiers) {
+        const translatedName = await translateText(tier.tier_name, activeLanguage)
+        const translatedMessage = await translateText(tier.message, activeLanguage)
+        translatedTiers.push({
+          ...tier,
+          tier_name: translatedName,
+          message: translatedMessage,
+        })
+      }
+      
+      // Update the language data
+      setLanguageData(prev => ({
+        ...prev,
+        [activeLanguage]: {
+          title: translatedTitle,
+          description: translatedDescription,
+          introText: translatedIntroText,
+          questions: translatedQuestions,
+          resultTiers: translatedTiers,
+        }
+      }))
+      
+      alert('Translation complete! Please review and edit as needed.')
+    } catch (error) {
+      console.error('Autofill translation error:', error)
+      alert('Translation failed. Please try again.')
+    } finally {
+      setTranslating(false)
+    }
   }
 
   const handleImageUpload = async (index: number, file: File) => {
@@ -250,28 +400,57 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
           <nav className="flex -mb-px">
             <button
               type="button"
-              className="px-6 py-3 border-b-2 border-blue-500 text-blue-600 font-medium text-sm"
+              onClick={() => setActiveLanguage('en')}
+              className={`px-6 py-3 border-b-2 font-medium text-sm ${
+                activeLanguage === 'en'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
             >
               English
             </button>
             <button
               type="button"
-              className="px-6 py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm"
+              onClick={() => setActiveLanguage('fr')}
+              className={`px-6 py-3 border-b-2 font-medium text-sm ${
+                activeLanguage === 'fr'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
             >
               French
             </button>
             <button
               type="button"
-              className="px-6 py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm"
+              onClick={() => setActiveLanguage('de')}
+              className={`px-6 py-3 border-b-2 font-medium text-sm ${
+                activeLanguage === 'de'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
             >
               German
             </button>
           </nav>
         </div>
-        <div className="p-4 bg-blue-50 border-l-4 border-blue-500">
+        <div className="p-4 bg-blue-50 border-l-4 border-blue-500 flex justify-between items-center">
           <p className="text-sm text-blue-700">
-            <strong>English</strong> is the primary language. Create translations in French and German tabs.
+            {activeLanguage === 'en' ? (
+              <><strong>English</strong> is the primary language. Create translations in French and German tabs.</>
+            ) : (
+              <><strong>{activeLanguage === 'fr' ? 'French' : 'German'}</strong> translation. Edit the auto-translated text as needed.</>
+            )}
           </p>
+          {activeLanguage !== 'en' && (
+            <button
+              type="button"
+              onClick={handleAutofillTranslation}
+              disabled={translating || !languageData.en.title}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {translating ? 'Translating...' : '🌐 Autofill Translation'}
+            </button>
+          )}
         </div>
       </div>
 
