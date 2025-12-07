@@ -151,10 +151,7 @@ export default function QuizList() {
                   </Link>
                   <button
                     onClick={() => {
-                      const url = prompt('Enter your quiz player URL (e.g., https://quiz-tool-quiz.vercel.app):')
-                      if (url) {
-                        window.open(`${url}/${quiz.id}`, '_blank')
-                      }
+                      window.open(`https://quiz-tool-quiz.vercel.app/${quiz.id}`, '_blank')
                     }}
                     className="text-blue-600 hover:text-blue-900 transition"
                     title="View Live"
