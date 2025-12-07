@@ -151,7 +151,8 @@ export default function QuizList() {
                   </Link>
                   <button
                     onClick={() => {
-                      window.open(`https://quiz-tool-quiz.vercel.app/${quiz.id}`, '_blank')
+                      const quizUrl = process.env.NEXT_PUBLIC_QUIZ_URL || 'https://quiz-tool-quiz.vercel.app'
+                      window.open(`${quizUrl}/${quiz.id}`, '_blank')
                     }}
                     className="text-blue-600 hover:text-blue-900 transition"
                     title="View Live"
