@@ -333,18 +333,8 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
     setLoading(true)
 
     try {
-      // Save English quiz first (parent)
+      // For now, only save English - translations need proper implementation
       const englishQuizId = await saveQuizLanguage('en', languageData.en, status)
-      
-      // Save French translation if it has content
-      if (languageData.fr.title && languageData.fr.questions.length > 0) {
-        await saveQuizLanguage('fr', languageData.fr, status, englishQuizId)
-      }
-      
-      // Save German translation if it has content
-      if (languageData.de.title && languageData.de.questions.length > 0) {
-        await saveQuizLanguage('de', languageData.de, status, englishQuizId)
-      }
 
       router.push('/quizzes')
       router.refresh()
