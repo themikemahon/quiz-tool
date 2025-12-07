@@ -53,7 +53,7 @@ export default function QuizList() {
   }
 
   const getEmbedCode = (quizId: number) => {
-    const quizUrl = process.env.NEXT_PUBLIC_QUIZ_URL || 'https://your-quiz-domain.vercel.app'
+    const quizUrl = process.env.NEXT_PUBLIC_QUIZ_URL || 'https://quiz-tool-quiz.vercel.app'
     const langParam = embedLanguage !== 'en' ? `&lang=${embedLanguage}` : ''
     return `<iframe src="${quizUrl}/${quizId}?embed=true${langParam}" width="${embedWidth}" height="${embedHeight}" frameborder="0" style="border: 1px solid #e5e7eb; border-radius: 8px;"></iframe>`
   }
