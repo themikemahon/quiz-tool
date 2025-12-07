@@ -421,71 +421,72 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Language Tabs */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="border-b border-gray-200">
-          <nav className="flex -mb-px">
-            <button
-              type="button"
-              onClick={() => setActiveLanguage('en')}
-              className={`px-6 py-3 border-b-2 font-medium text-sm ${
-                activeLanguage === 'en'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              English
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveLanguage('fr')}
-              className={`px-6 py-3 border-b-2 font-medium text-sm ${
-                activeLanguage === 'fr'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              French
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveLanguage('de')}
-              className={`px-6 py-3 border-b-2 font-medium text-sm ${
-                activeLanguage === 'de'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              German
-            </button>
-          </nav>
-        </div>
-        <div className="p-4 bg-blue-50 border-l-4 border-blue-500 flex justify-between items-center">
-          <p className="text-sm text-blue-700">
-            {activeLanguage === 'en' ? (
-              <><strong>English</strong> is the primary language. Create translations in French and German tabs.</>
-            ) : (
-              <><strong>{activeLanguage === 'fr' ? 'French' : 'German'}</strong> translation. Edit the auto-translated text as needed.</>
+    <div className="pb-32">
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Language Tabs */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="border-b border-gray-200">
+            <nav className="flex -mb-px">
+              <button
+                type="button"
+                onClick={() => setActiveLanguage('en')}
+                className={`px-6 py-3 border-b-2 font-medium text-sm ${
+                  activeLanguage === 'en'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                English
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveLanguage('fr')}
+                className={`px-6 py-3 border-b-2 font-medium text-sm ${
+                  activeLanguage === 'fr'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                French
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveLanguage('de')}
+                className={`px-6 py-3 border-b-2 font-medium text-sm ${
+                  activeLanguage === 'de'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                German
+              </button>
+            </nav>
+          </div>
+          <div className="p-4 bg-blue-50 border-l-4 border-blue-500 flex justify-between items-center">
+            <p className="text-sm text-blue-700">
+              {activeLanguage === 'en' ? (
+                <><strong>English</strong> is the primary language. Create translations in French and German tabs.</>
+              ) : (
+                <><strong>{activeLanguage === 'fr' ? 'French' : 'German'}</strong> translation. Edit the auto-translated text as needed.</>
+              )}
+            </p>
+            {activeLanguage !== 'en' && (
+              <button
+                type="button"
+                onClick={handleAutofillTranslation}
+                disabled={translating || !languageData.en.title}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {translating ? 'Translating...' : '🌐 Autofill Translation'}
+              </button>
             )}
-          </p>
-          {activeLanguage !== 'en' && (
-            <button
-              type="button"
-              onClick={handleAutofillTranslation}
-              disabled={translating || !languageData.en.title}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {translating ? 'Translating...' : '🌐 Autofill Translation'}
-            </button>
-          )}
+          </div>
         </div>
-      </div>
 
-      <form className="space-y-8">
-        {/* Quiz Details */}
-        <div className="bg-white rounded-lg shadow p-6 space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900">Quiz Details</h2>
+        <form className="space-y-6">
+          {/* Quiz Details */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
+            <h2 className="text-xl font-semibold text-gray-900">Quiz Details</h2>
         
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -512,18 +513,18 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
             rows={2}
             placeholder="A quick quiz to test your scam detection skills"
           />
+          </div>
         </div>
-      </div>
 
-      {/* Result Tiers */}
-      <div className="bg-white rounded-lg shadow p-6 space-y-4">
-        <h2 className="text-xl font-semibold text-gray-900">Result Tiers</h2>
-        <p className="text-sm text-gray-600">
-          Define messages for different performance levels. Percentages are calculated automatically based on correct answers.
-        </p>
+        {/* Result Tiers */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
+          <h2 className="text-xl font-semibold text-gray-900">Result Tiers</h2>
+          <p className="text-sm text-gray-600">
+            Define messages for different performance levels. Percentages are calculated automatically based on correct answers.
+          </p>
 
-        {resultTiers.map((tier, index) => (
-          <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-3">
+          {resultTiers.map((tier, index) => (
+            <div key={index} className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3">
             <div className="flex items-center gap-4">
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -579,14 +580,14 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
                 placeholder="You're just getting started! Here are some tips..."
                 required
               />
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      {/* Questions */}
-      {questions.map((q, index) => (
-        <div key={index} className="bg-white rounded-lg shadow p-6 space-y-4">
+        {/* Questions */}
+        {questions.map((q, index) => (
+          <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold text-gray-900">
               Question {index + 1}
@@ -679,41 +680,53 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
               placeholder="This is a scam because..."
               required
             />
+            </div>
+          </div>
+        ))}
+
+        {/* Add Question Button */}
+        <div className="flex justify-center py-4">
+          <button
+            type="button"
+            onClick={addQuestion}
+            className="px-6 py-3 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+          >
+            + Add Another Question
+          </button>
+        </div>
+        </form>
+      </div>
+
+      {/* Sticky Action Bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-10">
+        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+          <button
+            type="button"
+            onClick={() => router.push('/quizzes')}
+            className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+          >
+            Cancel
+          </button>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={(e) => handleSubmit(e, 'draft')}
+              disabled={loading}
+              className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+            >
+              {loading ? 'Saving...' : 'Save as Draft'}
+            </button>
+            <button
+              type="button"
+              onClick={(e) => handleSubmit(e, 'published')}
+              disabled={loading}
+              className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-sm transition-colors"
+            >
+              {loading ? (mode === 'create' ? 'Publishing...' : 'Updating...') : (mode === 'create' ? 'Publish Quiz' : 'Update & Publish')}
+            </button>
           </div>
         </div>
-      ))}
-
-      {/* Add Question Button */}
-      <div className="flex justify-center">
-        <button
-          type="button"
-          onClick={addQuestion}
-          className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
-        >
-          + Add Another Question
-        </button>
       </div>
-
-      {/* Actions */}
-      <div className="flex gap-4">
-        <button
-          type="button"
-          onClick={(e) => handleSubmit(e, 'draft')}
-          disabled={loading}
-          className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? 'Saving...' : 'Save as Draft'}
-        </button>
-        <button
-          type="button"
-          onClick={(e) => handleSubmit(e, 'published')}
-          disabled={loading}
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? (mode === 'create' ? 'Publishing...' : 'Updating...') : (mode === 'create' ? 'Publish Quiz' : 'Update & Publish')}
-        </button>
-      </div>
-      </form>
     </div>
   )
 }
