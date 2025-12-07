@@ -22,27 +22,24 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
     const { 
-      title, description, intro_text, template_type, status,
-      title_fr, title_de, description_fr, description_de, intro_text_fr, intro_text_de
+      title, description, template_type, status,
+      title_fr, title_de, description_fr, description_de
     } = body
 
     const { rows } = await sql<Quiz>`
       INSERT INTO quizzes (
-        title, description, intro_text, template_type, status,
-        title_fr, title_de, description_fr, description_de, intro_text_fr, intro_text_de
+        title, description, template_type, status,
+        title_fr, title_de, description_fr, description_de
       )
       VALUES (
         ${title}, 
         ${description}, 
-        ${intro_text}, 
         ${template_type || 'scam-detector'}, 
         ${status || 'draft'},
         ${title_fr || null},
         ${title_de || null},
         ${description_fr || null},
-        ${description_de || null},
-        ${intro_text_fr || null},
-        ${intro_text_de || null}
+        ${description_de || null}
       )
       RETURNING *
     `
