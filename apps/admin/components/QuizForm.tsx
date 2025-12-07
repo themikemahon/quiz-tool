@@ -243,10 +243,42 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
   }
 
   return (
-    <form className="space-y-8">
-      {/* Quiz Details */}
-      <div className="bg-white rounded-lg shadow p-6 space-y-4">
-        <h2 className="text-xl font-semibold text-gray-900">Quiz Details</h2>
+    <div className="space-y-6">
+      {/* Language Tabs */}
+      <div className="bg-white rounded-lg shadow">
+        <div className="border-b border-gray-200">
+          <nav className="flex -mb-px">
+            <button
+              type="button"
+              className="px-6 py-3 border-b-2 border-blue-500 text-blue-600 font-medium text-sm"
+            >
+              English
+            </button>
+            <button
+              type="button"
+              className="px-6 py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm"
+            >
+              French
+            </button>
+            <button
+              type="button"
+              className="px-6 py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm"
+            >
+              German
+            </button>
+          </nav>
+        </div>
+        <div className="p-4 bg-blue-50 border-l-4 border-blue-500">
+          <p className="text-sm text-blue-700">
+            <strong>English</strong> is the primary language. Create translations in French and German tabs.
+          </p>
+        </div>
+      </div>
+
+      <form className="space-y-8">
+        {/* Quiz Details */}
+        <div className="bg-white rounded-lg shadow p-6 space-y-4">
+          <h2 className="text-xl font-semibold text-gray-900">Quiz Details</h2>
         
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -488,6 +520,7 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
           {loading ? (mode === 'create' ? 'Publishing...' : 'Updating...') : (mode === 'create' ? 'Publish Quiz' : 'Update & Publish')}
         </button>
       </div>
-    </form>
+      </form>
+    </div>
   )
 }
