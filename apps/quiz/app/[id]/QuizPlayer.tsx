@@ -90,7 +90,7 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
         ? "w-full" 
         : "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4"
       }>
-        <div className={embedMode ? "w-full card-sm animate-fadeIn" : "max-w-xl w-full card animate-fadeIn"}>
+        <div className={embedMode ? "w-full card-sm animate-fadeIn" : "max-w-xl w-full card animate-fadeIn"} style={{ zoom: 0.85 }}>
           <h1 className={embedMode ? "text-2xl font-bold text-gray-900 mb-3" : "mb-4"}>
             {quiz.title}
           </h1>
@@ -119,7 +119,7 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
         ? "w-full" 
         : "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4"
       }>
-        <div className={embedMode ? "w-full card-sm transition-all duration-500 ease-in-out" : "max-w-2xl w-full card transition-all duration-500 ease-in-out"}>
+        <div className={embedMode ? "w-full card-sm transition-all duration-500 ease-in-out" : "max-w-2xl w-full card transition-all duration-500 ease-in-out"} style={{ zoom: 0.85 }}>
           {/* Progress */}
           <div className={embedMode ? "mb-5" : "mb-6"}>
             <div className="flex justify-between items-center mb-2">
@@ -226,7 +226,7 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
       ? "w-full" 
       : "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4"
     }>
-      <div className={embedMode ? "w-full card-sm animate-fadeIn" : "max-w-xl w-full card animate-fadeIn"}>
+      <div className={embedMode ? "w-full card-sm animate-fadeIn" : "max-w-xl w-full card animate-fadeIn"} style={{ zoom: 0.85 }}>
         <div className={embedMode ? "text-center mb-6" : "text-center mb-8"}>
           <h1 className={embedMode ? "text-2xl font-bold text-gray-900 mb-4" : "mb-5"}>
             {t.quizComplete}
