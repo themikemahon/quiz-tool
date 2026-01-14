@@ -1,16 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { getTranslations } from '../../../../packages/shared/translations'
-
-interface Question {
-  id: number
-  question_text: string
-  image_url: string
-  correct_answer: string
-  explanation: string
-  order_index: number
-}
+import { applyTheme } from '../../../../packages/shared/themeUtils'
+import { BRAND_THEMES } from '../../../../packages/shared/themes'
+import type { BrandTheme, Question, AnswerOption } from '../../../../packages/shared/types'
+import QuestionRenderer from './QuestionRenderer'
+import CTAButton from './CTAButton'
 
 interface ResultTier {
   tier_name: string
@@ -23,8 +19,15 @@ interface Quiz {
   id: number
   title: string
   description: string
-  questions: Question[]
+  questions: (Question & { options?: AnswerOption[] })[]
   result_tiers: ResultTier[]
+  brandTheme?: BrandTheme | null
+  cta_enabled?: boolean
+  cta_text?: string
+  cta_text_fr?: string
+  cta_text_de?: string
+  cta_url?: string
+  cta_mobile_url?: string
 }
 
 interface QuizPlayerProps {
@@ -39,19 +42,27 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
   const [state, setState] = useState<QuizState>('intro')
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [answers, setAnswers] = useState<Record<number, string>>({})
-  const [showExplanation, setShowExplanation] = useState(false)
 
   const currentQuestion = quiz.questions[currentQuestionIndex]
   const totalQuestions = quiz.questions.length
   const t = getTranslations(language)
 
+  // Apply brand theme on component mount
+  useEffect(() => {
+    // If quiz has a brand theme, apply it
+    if (quiz.brandTheme) {
+      applyTheme(quiz.brandTheme)
+    } else {
+      // Fall back to default theme
+      applyTheme(BRAND_THEMES.default)
+    }
+  }, [quiz.brandTheme])
+
   const handleAnswer = (answer: string) => {
     setAnswers({ ...answers, [currentQuestion.id]: answer })
-    setShowExplanation(true)
   }
 
   const handleNext = () => {
-    setShowExplanation(false)
     // Wait for fade out animation before changing question
     setTimeout(() => {
       if (currentQuestionIndex < totalQuestions - 1) {
@@ -79,7 +90,6 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
   const handleRestart = () => {
     setAnswers({})
     setCurrentQuestionIndex(0)
-    setShowExplanation(false)
     setState('intro')
   }
 
@@ -112,8 +122,6 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
 
   // Question Screen
   if (state === 'question') {
-    const isCorrect = answers[currentQuestion.id] === currentQuestion.correct_answer
-
     return (
       <div className={embedMode 
         ? "w-full" 
@@ -132,7 +140,7 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
+                className="progress-bar"
                 style={{
                   width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%`,
                 }}
@@ -140,79 +148,16 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
             </div>
           </div>
 
-          {/* Question */}
-          <div className="transition-opacity duration-500">
-            <h2 key={`q-${currentQuestionIndex}`} className={`animate-fadeIn ${embedMode ? "text-xl font-bold text-gray-900 mb-4" : "mb-5"}`}>
-              {currentQuestion.question_text}
-            </h2>
-
-            {/* Image */}
-            {currentQuestion.image_url && (
-              <div className={embedMode ? "mb-5 rounded-lg overflow-hidden border border-gray-200 relative" : "mb-6 rounded-lg overflow-hidden border border-gray-200 relative"}>
-                <img
-                  key={currentQuestion.image_url}
-                  src={currentQuestion.image_url}
-                  alt="Question"
-                  className="w-full h-auto animate-fadeIn"
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Answer Buttons */}
-          <div className="grid transition-all duration-500 ease-in-out" style={{ gridTemplateRows: showExplanation ? '0fr' : '1fr' }}>
-            <div className="overflow-hidden">
-              <div 
-                key={`a-${currentQuestionIndex}`} 
-                className={`transition-opacity duration-300 ${showExplanation ? 'opacity-0' : 'opacity-100'} ${embedMode ? "grid grid-cols-2 gap-3" : "grid grid-cols-2 gap-4"}`}
-              >
-                <button
-                  onClick={() => handleAnswer('scam')}
-                  className={embedMode ? "btn-answer-scam-sm" : "btn-answer-scam"}
-                >
-                  🚨 {t.scam}
-                </button>
-                <button
-                  onClick={() => handleAnswer('not-scam')}
-                  className={embedMode ? "btn-answer-safe-sm" : "btn-answer-safe"}
-                >
-                  ✅ {t.notScam}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Explanation */}
-          <div className="grid transition-all duration-500 ease-in-out delay-100" style={{ gridTemplateRows: showExplanation ? '1fr' : '0fr' }}>
-            <div className="overflow-hidden">
-              <div 
-                className={`transition-opacity duration-300 ${showExplanation ? 'opacity-100 delay-200' : 'opacity-0'} ${embedMode ? "space-y-3" : "space-y-4"}`}
-              >
-                {/* Result */}
-                <div className={embedMode ? (isCorrect ? 'result-card-success-sm' : 'result-card-error-sm') : (isCorrect ? 'result-card-success' : 'result-card-error')}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className={embedMode ? "text-xl" : "text-2xl"}>
-                      {isCorrect ? '✅' : '❌'}
-                    </span>
-                    <span className={`font-bold ${isCorrect ? 'text-green-700' : 'text-red-700'} ${embedMode ? 'text-lg' : 'text-xl'}`}>
-                      {isCorrect ? t.correct : t.incorrect}
-                    </span>
-                  </div>
-                  <p className={embedMode ? "text-sm text-gray-700 leading-relaxed" : "text-base text-gray-700 leading-relaxed"}>
-                    {currentQuestion.explanation}
-                  </p>
-                </div>
-
-                {/* Next Button */}
-                <button
-                  onClick={handleNext}
-                  className={embedMode ? "w-full btn-primary-sm" : "w-full btn-primary"}
-                >
-                  {currentQuestionIndex < totalQuestions - 1 ? t.nextQuestion : t.seeResults}
-                </button>
-              </div>
-            </div>
-          </div>
+          {/* Question Renderer */}
+          <QuestionRenderer
+            key={currentQuestion.id}
+            question={currentQuestion}
+            onAnswer={handleAnswer}
+            embedMode={embedMode}
+            translations={t}
+            onNext={handleNext}
+            isLastQuestion={currentQuestionIndex >= totalQuestions - 1}
+          />
         </div>
       </div>
     )
@@ -231,8 +176,8 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
           <h1 className={embedMode ? "text-2xl font-bold text-gray-900 mb-4" : "mb-5"}>
             {t.quizComplete}
           </h1>
-          <div className={embedMode ? "inline-block bg-blue-100 rounded-full px-6 py-3 mb-3" : "inline-block bg-blue-100 rounded-full px-8 py-4 mb-4"}>
-            <span className={embedMode ? "text-3xl font-bold text-blue-600" : "text-4xl font-bold text-blue-600"}>
+          <div className={embedMode ? "inline-block score-badge-sm mb-3" : "inline-block score-badge mb-4"}>
+            <span className={embedMode ? "text-3xl score-text" : "text-4xl score-text"}>
               {results.correct}/{results.total}
             </span>
           </div>
@@ -250,6 +195,21 @@ export default function QuizPlayer({ quiz, embedMode = false, language }: QuizPl
             <p className={embedMode ? "text-sm text-gray-700 whitespace-pre-line leading-relaxed" : "text-base text-gray-700 whitespace-pre-line leading-relaxed"}>
               {results.tier.message}
             </p>
+          </div>
+        )}
+
+        {/* CTA Button */}
+        {quiz.cta_enabled && quiz.cta_url && (
+          <div className={embedMode ? "mb-4" : "mb-6"}>
+            <CTAButton
+              ctaText={quiz.cta_text}
+              ctaTextFr={quiz.cta_text_fr}
+              ctaTextDe={quiz.cta_text_de}
+              ctaUrl={quiz.cta_url}
+              ctaMobileUrl={quiz.cta_mobile_url}
+              language={language}
+              embedMode={embedMode}
+            />
           </div>
         )}
 

@@ -2,20 +2,14 @@ import { sql } from '@vercel/postgres'
 import QuizPlayer from './QuizPlayer'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
+import type { BrandTheme, Question as SharedQuestion, AnswerOption } from '@quiz-tool/shared/types'
 
 // Disable caching for quiz player
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-interface Question {
-  id: number
-  quiz_id: number
-  order_index: number
-  image_url: string
-  question_text: string
-  correct_answer: string
-  explanation: string
-  created_at: string
+interface Question extends SharedQuestion {
+  options?: AnswerOption[]
 }
 
 interface ResultTier {
@@ -34,6 +28,13 @@ interface Quiz {
   description: string
   status: string
   template_type: string
+  brand_theme_id?: number
+  cta_enabled: boolean
+  cta_text?: string
+  cta_text_fr?: string
+  cta_text_de?: string
+  cta_url?: string
+  cta_mobile_url?: string
   created_at: string
   updated_at: string
 }
@@ -54,12 +55,43 @@ async function getQuiz(id: string, language?: string) {
 
     const quiz = quizRows[0]
 
+    // Get brand theme if specified
+    let brandTheme: BrandTheme | null = null
+    if (quiz.brand_theme_id) {
+      try {
+        const { rows: themeRows } = await sql<BrandTheme>`
+          SELECT * FROM brand_themes WHERE id = ${quiz.brand_theme_id}
+        `
+        if (themeRows.length > 0) {
+          brandTheme = themeRows[0]
+        }
+      } catch (error) {
+        console.error('Error fetching brand theme:', error)
+        // Continue without theme - will fall back to default
+      }
+    }
+
     // Get questions
     const { rows: questionRows } = await sql<Question>`
       SELECT * FROM questions 
       WHERE quiz_id = ${quizId}
       ORDER BY order_index ASC
     `
+
+    // Get answer options for multiple-choice questions
+    const questionsWithOptions = await Promise.all(
+      questionRows.map(async (question) => {
+        if (question.question_type === 'multiple-choice') {
+          const { rows: optionRows } = await sql<AnswerOption>`
+            SELECT * FROM answer_options
+            WHERE question_id = ${question.id}
+            ORDER BY order_index ASC
+          `
+          return { ...question, options: optionRows }
+        }
+        return question
+      })
+    )
 
     // Get result tiers
     const { rows: tierRows } = await sql<ResultTier>`
@@ -79,10 +111,16 @@ async function getQuiz(id: string, language?: string) {
       ...quiz,
       title: getTranslatedField(quiz, 'title'),
       description: getTranslatedField(quiz, 'description'),
-      questions: questionRows.map(q => ({
+      cta_text: getTranslatedField(quiz, 'cta_text'),
+      brandTheme,
+      questions: questionsWithOptions.map(q => ({
         ...q,
         question_text: getTranslatedField(q, 'question_text'),
         explanation: getTranslatedField(q, 'explanation'),
+        options: q.options?.map(opt => ({
+          ...opt,
+          option_text: getTranslatedField(opt, 'option_text'),
+        })),
       })),
       result_tiers: tierRows.map(t => ({
         ...t,

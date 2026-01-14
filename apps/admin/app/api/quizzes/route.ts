@@ -23,13 +23,17 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { 
       title, description, template_type, status,
-      title_fr, title_de, description_fr, description_de
+      title_fr, title_de, description_fr, description_de,
+      brand_theme_id,
+      cta_enabled, cta_text, cta_text_fr, cta_text_de, cta_url, cta_mobile_url
     } = body
 
     const { rows } = await sql<Quiz>`
       INSERT INTO quizzes (
         title, description, template_type, status,
-        title_fr, title_de, description_fr, description_de
+        title_fr, title_de, description_fr, description_de,
+        brand_theme_id,
+        cta_enabled, cta_text, cta_text_fr, cta_text_de, cta_url, cta_mobile_url
       )
       VALUES (
         ${title}, 
@@ -39,7 +43,14 @@ export async function POST(request: Request) {
         ${title_fr || null},
         ${title_de || null},
         ${description_fr || null},
-        ${description_de || null}
+        ${description_de || null},
+        ${brand_theme_id || null},
+        ${cta_enabled || false},
+        ${cta_text || null},
+        ${cta_text_fr || null},
+        ${cta_text_de || null},
+        ${cta_url || null},
+        ${cta_mobile_url || null}
       )
       RETURNING *
     `

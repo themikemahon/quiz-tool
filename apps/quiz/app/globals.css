@@ -9,12 +9,19 @@
   h3 { @apply text-xl font-semibold; }
   h4 { @apply text-lg font-semibold; }
   h5 { @apply text-base font-semibold; }
+  
+  /* Apply theme font family to body */
+  body {
+    font-family: var(--font-family, 'Inter, system-ui, sans-serif');
+  }
 }
 
 @layer components {
   /* Button Hierarchy - Standard */
   .btn-primary {
-    @apply px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity text-base;
+    @apply px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity text-base;
+    background-color: var(--color-primary, #3B82F6);
+    color: white;
   }
   
   .btn-secondary {
@@ -31,7 +38,9 @@
   
   /* Button Hierarchy - Embed Mode (Compact) */
   .btn-primary-sm {
-    @apply px-4 py-2 bg-blue-600 text-white rounded-md font-semibold hover:opacity-90 transition-opacity text-sm;
+    @apply px-4 py-2 rounded-md font-semibold hover:opacity-90 transition-opacity text-sm;
+    background-color: var(--color-primary, #3B82F6);
+    color: white;
   }
   
   .btn-secondary-sm {
@@ -70,6 +79,30 @@
   
   .result-card-error-sm {
     @apply p-4 rounded-md bg-red-50 border border-red-300;
+  }
+  
+  /* Progress bar using theme color */
+  .progress-bar {
+    @apply h-2 rounded-full transition-all duration-500 ease-out;
+    background-color: var(--color-primary, #3B82F6);
+  }
+  
+  /* Score badge using theme color */
+  .score-badge {
+    @apply inline-block rounded-full px-8 py-4;
+    background-color: var(--color-primary, #3B82F6);
+    opacity: 0.1;
+  }
+  
+  .score-badge-sm {
+    @apply inline-block rounded-full px-6 py-3;
+    background-color: var(--color-primary, #3B82F6);
+    opacity: 0.1;
+  }
+  
+  .score-text {
+    @apply font-bold;
+    color: var(--color-primary, #3B82F6);
   }
 }
 

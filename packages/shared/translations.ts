@@ -7,6 +7,8 @@ export interface UITranslations {
   of: string
   scam: string
   notScam: string
+  true: string
+  false: string
   correct: string
   incorrect: string
   nextQuestion: string
@@ -24,6 +26,8 @@ export const translations: Record<Language, UITranslations> = {
     of: 'of',
     scam: 'Scam',
     notScam: 'Not a Scam',
+    true: 'True',
+    false: 'False',
     correct: 'Correct!',
     incorrect: 'Incorrect',
     nextQuestion: 'Next Question',
@@ -39,6 +43,8 @@ export const translations: Record<Language, UITranslations> = {
     of: 'sur',
     scam: 'Arnaque',
     notScam: 'Pas une Arnaque',
+    true: 'Vrai',
+    false: 'Faux',
     correct: 'Correct !',
     incorrect: 'Incorrect',
     nextQuestion: 'Question Suivante',
@@ -54,6 +60,8 @@ export const translations: Record<Language, UITranslations> = {
     of: 'von',
     scam: 'Betrug',
     notScam: 'Kein Betrug',
+    true: 'Wahr',
+    false: 'Falsch',
     correct: 'Richtig!',
     incorrect: 'Falsch',
     nextQuestion: 'Nächste Frage',

@@ -23,9 +23,24 @@ export async function GET(
       ORDER BY order_index ASC
     `
 
+    // Fetch answer options for multiple-choice questions
+    const questionsWithOptions = await Promise.all(
+      questionRows.map(async (question) => {
+        if (question.question_type === 'multiple-choice') {
+          const { rows: optionRows } = await sql`
+            SELECT * FROM answer_options
+            WHERE question_id = ${question.id}
+            ORDER BY order_index ASC
+          `
+          return { ...question, options: optionRows }
+        }
+        return question
+      })
+    )
+
     return NextResponse.json({
       ...quizRows[0],
-      questions: questionRows,
+      questions: questionsWithOptions,
     })
   } catch (error) {
     console.error('Error fetching quiz:', error)
@@ -45,7 +60,9 @@ export async function PUT(
     const body = await request.json()
     const { 
       title, description, status,
-      title_fr, title_de, description_fr, description_de
+      title_fr, title_de, description_fr, description_de,
+      brand_theme_id,
+      cta_enabled, cta_text, cta_text_fr, cta_text_de, cta_url, cta_mobile_url
     } = body
 
     const { rows } = await sql<Quiz>`
@@ -58,6 +75,13 @@ export async function PUT(
         title_de = ${title_de || null},
         description_fr = ${description_fr || null},
         description_de = ${description_de || null},
+        brand_theme_id = ${brand_theme_id || null},
+        cta_enabled = ${cta_enabled || false},
+        cta_text = ${cta_text || null},
+        cta_text_fr = ${cta_text_fr || null},
+        cta_text_de = ${cta_text_de || null},
+        cta_url = ${cta_url || null},
+        cta_mobile_url = ${cta_mobile_url || null},
         updated_at = CURRENT_TIMESTAMP
       WHERE id = ${quizId}
       RETURNING *
