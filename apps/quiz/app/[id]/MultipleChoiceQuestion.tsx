@@ -28,26 +28,31 @@ export default function MultipleChoiceQuestion({
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
   const [showExplanation, setShowExplanation] = useState(false)
 
-  const handleAnswerClick = (optionId: string) => {
-    setSelectedAnswer(optionId)
-    onAnswer(optionId)
-    setShowExplanation(true)
-  }
-
-  const isCorrect = selectedAnswer === question.correct_answer
-
   // Sort options by order_index
   const sortedOptions = question.options?.sort((a, b) => a.order_index - b.order_index) || []
 
+  const handleAnswerClick = (optionId: string) => {
+    setSelectedAnswer(optionId)
+    // Use is_correct on the option directly, since correct_answer stores
+    // an index but option IDs are database-generated
+    const clickedOption = sortedOptions.find(o => o.id.toString() === optionId)
+    const answerValue = clickedOption?.is_correct ? question.correct_answer : '__wrong__'
+    onAnswer(answerValue)
+    setShowExplanation(true)
+  }
+
+  const selectedOption = selectedAnswer ? sortedOptions.find(o => o.id.toString() === selectedAnswer) : null
+  const isCorrect = selectedOption?.is_correct ?? false
+
   return (
-    <div className="transition-opacity duration-500">
-      <h2 className={`animate-fadeIn ${embedMode ? "text-xl font-bold text-gray-900 mb-4" : "mb-5"}`}>
+    <div className="transition-opacity duration-200">
+      <h2 className={`animate-fadeIn ${embedMode ? "text-xl font-bold mb-4" : "mb-5"}`} style={{ color: 'var(--color-text, #111827)', textWrap: 'balance' }}>
         {question.question_text}
       </h2>
 
       {/* Optional Image */}
       {question.image_url && (
-        <div className={embedMode ? "mb-5 rounded-lg overflow-hidden border border-gray-200 relative" : "mb-6 rounded-lg overflow-hidden border border-gray-200 relative"}>
+        <div className={embedMode ? "mb-5 rounded-lg overflow-hidden relative" : "mb-6 rounded-lg overflow-hidden relative"} style={{ boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.06)' }}>
           <img
             src={question.image_url}
             alt="Question"
@@ -57,19 +62,16 @@ export default function MultipleChoiceQuestion({
       )}
 
       {/* Answer Options */}
-      <div className="grid transition-all duration-500 ease-in-out" style={{ gridTemplateRows: showExplanation ? '0fr' : '1fr' }}>
+      <div className="grid transition-[grid-template-rows] duration-200" style={{ gridTemplateRows: showExplanation ? '0fr' : '1fr', transitionTimingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)' }}>
         <div className="overflow-hidden">
-          <div 
-            className={`transition-opacity duration-300 ${showExplanation ? 'opacity-0' : 'opacity-100'} ${embedMode ? "space-y-2" : "space-y-3"}`}
+          <div
+            className={`transition-opacity duration-200 ${showExplanation ? 'opacity-0' : 'opacity-100'} ${embedMode ? "space-y-2" : "space-y-3"}`}
           >
             {sortedOptions.map((option) => (
               <button
                 key={option.id}
                 onClick={() => handleAnswerClick(option.id.toString())}
-                className={embedMode 
-                  ? "w-full text-left px-4 py-3 rounded-lg border-2 border-gray-300 bg-white hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 text-sm font-medium text-gray-900"
-                  : "w-full text-left px-6 py-4 rounded-lg border-2 border-gray-300 bg-white hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 text-base font-medium text-gray-900"
-                }
+                className={embedMode ? "btn-answer-option-sm" : "btn-answer-option"}
               >
                 {option.option_text}
               </button>
@@ -79,10 +81,10 @@ export default function MultipleChoiceQuestion({
       </div>
 
       {/* Explanation */}
-      <div className="grid transition-all duration-500 ease-in-out delay-100" style={{ gridTemplateRows: showExplanation ? '1fr' : '0fr' }}>
+      <div className="grid transition-[grid-template-rows] duration-200 delay-75" style={{ gridTemplateRows: showExplanation ? '1fr' : '0fr', transitionTimingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)' }}>
         <div className="overflow-hidden">
-          <div 
-            className={`transition-opacity duration-300 ${showExplanation ? 'opacity-100 delay-200' : 'opacity-0'} ${embedMode ? "space-y-3" : "space-y-4"}`}
+          <div
+            className={`transition-opacity duration-200 ${showExplanation ? 'opacity-100 delay-100' : 'opacity-0'} ${embedMode ? "space-y-3" : "space-y-4"}`}
           >
             {/* Result */}
             <div className={embedMode ? (isCorrect ? 'result-card-success-sm' : 'result-card-error-sm') : (isCorrect ? 'result-card-success' : 'result-card-error')}>
@@ -90,12 +92,15 @@ export default function MultipleChoiceQuestion({
                 <span className={embedMode ? "text-xl" : "text-2xl"}>
                   {isCorrect ? '✅' : '❌'}
                 </span>
-                <span className={`font-bold ${isCorrect ? 'text-green-700' : 'text-red-700'} ${embedMode ? 'text-lg' : 'text-xl'}`}>
+                <span
+                  className={`font-bold ${embedMode ? 'text-lg' : 'text-xl'}`}
+                  style={{ color: isCorrect ? 'var(--color-primary, #3B82F6)' : 'var(--color-text, #111827)' }}
+                >
                   {isCorrect ? translations.correct : translations.incorrect}
                 </span>
               </div>
               {question.explanation && (
-                <p className={embedMode ? "text-sm text-gray-700 leading-relaxed" : "text-base text-gray-700 leading-relaxed"}>
+                <p className={embedMode ? "text-sm leading-relaxed" : "text-base leading-relaxed"} style={{ color: 'var(--color-text, #111827)', opacity: 0.8, textWrap: 'pretty' }}>
                   {question.explanation}
                 </p>
               )}

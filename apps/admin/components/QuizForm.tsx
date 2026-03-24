@@ -771,157 +771,6 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
           </div>
         </div>
 
-        {/* CTA Configuration */}
-        <div className="card space-y-5">
-          <div>
-            <h2>Call-to-Action Button</h2>
-            <p className="text-sm text-gray-600 mt-2">
-              Add an optional CTA button at the end of the quiz to promote products or services.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              id="cta-enabled"
-              checked={ctaEnabled}
-              onChange={(e) => setCtaEnabled(e.target.checked)}
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <label htmlFor="cta-enabled" className="text-sm font-medium text-gray-700">
-              Enable CTA Button
-            </label>
-          </div>
-
-          {ctaEnabled && (
-            <div className="space-y-5 pl-7 border-l-2 border-blue-200">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Button Text *
-                </label>
-                <input
-                  type="text"
-                  value={ctaText[activeLanguage]}
-                  onChange={(e) => setCtaText({ ...ctaText, [activeLanguage]: e.target.value })}
-                  className="input-field"
-                  placeholder="Learn More About Protection"
-                  required={ctaEnabled}
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                  {activeLanguage === 'en' 
-                    ? 'Enter the button text in English. Use the language tabs to add translations.'
-                    : `Translation for ${activeLanguage === 'fr' ? 'French' : 'German'}. Use autofill or edit manually.`
-                  }
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Desktop URL *
-                </label>
-                <input
-                  type="url"
-                  value={ctaUrl}
-                  onChange={(e) => setCtaUrl(e.target.value)}
-                  className="input-field"
-                  placeholder="https://example.com/product"
-                  required={ctaEnabled}
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                  URL to open when the button is clicked on desktop devices
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Mobile URL (Optional)
-                </label>
-                <input
-                  type="url"
-                  value={ctaMobileUrl}
-                  onChange={(e) => setCtaMobileUrl(e.target.value)}
-                  className="input-field"
-                  placeholder="https://example.com/mobile-product"
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                  Optional mobile-specific URL. If not provided, desktop URL will be used.
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Result Tiers */}
-        <div className="card space-y-5">
-          <div>
-            <h2>Result Tiers</h2>
-            <p className="text-sm text-gray-600 mt-2">
-              Define messages for different performance levels. Percentages are calculated automatically based on correct answers.
-            </p>
-          </div>
-
-          {resultTiers.map((tier, index) => (
-            <div key={index} className="card-section space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tier Name *
-                </label>
-                <input
-                  type="text"
-                  value={tier.tier_name}
-                  onChange={(e) => updateResultTier(index, 'tier_name', e.target.value)}
-                  className="input-field"
-                  placeholder="Novice"
-                  required
-                />
-              </div>
-              <div className="w-32">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Min %
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={tier.min_percentage}
-                  onChange={(e) => updateResultTier(index, 'min_percentage', parseInt(e.target.value))}
-                  className="input-field"
-                  required
-                />
-              </div>
-              <div className="w-32">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Max %
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={tier.max_percentage}
-                  onChange={(e) => updateResultTier(index, 'max_percentage', parseInt(e.target.value))}
-                  className="input-field"
-                  required
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Message *
-              </label>
-              <textarea
-                value={tier.message}
-                onChange={(e) => updateResultTier(index, 'message', e.target.value)}
-                className="textarea-field"
-                rows={3}
-                placeholder="You're just getting started! Here are some tips..."
-                required
-              />
-              </div>
-            </div>
-          ))}
-        </div>
-
         {/* Questions */}
         {questions.map((q, index) => (
           <div key={index} className="card space-y-5">
@@ -1228,6 +1077,157 @@ export default function QuizForm({ mode, initialData }: QuizFormProps) {
           >
             + Add Another Question
           </button>
+        </div>
+
+        {/* Result Tiers */}
+        <div className="card space-y-5">
+          <div>
+            <h2>Result Tiers</h2>
+            <p className="text-sm text-gray-600 mt-2">
+              Define messages for different performance levels. Percentages are calculated automatically based on correct answers.
+            </p>
+          </div>
+
+          {resultTiers.map((tier, index) => (
+            <div key={index} className="card-section space-y-4">
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tier Name *
+                </label>
+                <input
+                  type="text"
+                  value={tier.tier_name}
+                  onChange={(e) => updateResultTier(index, 'tier_name', e.target.value)}
+                  className="input-field"
+                  placeholder="Novice"
+                  required
+                />
+              </div>
+              <div className="w-32">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Min %
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={tier.min_percentage}
+                  onChange={(e) => updateResultTier(index, 'min_percentage', parseInt(e.target.value))}
+                  className="input-field"
+                  required
+                />
+              </div>
+              <div className="w-32">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Max %
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={tier.max_percentage}
+                  onChange={(e) => updateResultTier(index, 'max_percentage', parseInt(e.target.value))}
+                  className="input-field"
+                  required
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Message *
+              </label>
+              <textarea
+                value={tier.message}
+                onChange={(e) => updateResultTier(index, 'message', e.target.value)}
+                className="textarea-field"
+                rows={3}
+                placeholder="You're just getting started! Here are some tips..."
+                required
+              />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA Configuration */}
+        <div className="card space-y-5">
+          <div>
+            <h2>Call-to-Action Button</h2>
+            <p className="text-sm text-gray-600 mt-2">
+              Add an optional CTA button at the end of the quiz to promote products or services.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="cta-enabled"
+              checked={ctaEnabled}
+              onChange={(e) => setCtaEnabled(e.target.checked)}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label htmlFor="cta-enabled" className="text-sm font-medium text-gray-700">
+              Enable CTA Button
+            </label>
+          </div>
+
+          {ctaEnabled && (
+            <div className="space-y-5 pl-7 border-l-2 border-blue-200">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Button Text *
+                </label>
+                <input
+                  type="text"
+                  value={ctaText[activeLanguage]}
+                  onChange={(e) => setCtaText({ ...ctaText, [activeLanguage]: e.target.value })}
+                  className="input-field"
+                  placeholder="Learn More About Protection"
+                  required={ctaEnabled}
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  {activeLanguage === 'en'
+                    ? 'Enter the button text in English. Use the language tabs to add translations.'
+                    : `Translation for ${activeLanguage === 'fr' ? 'French' : 'German'}. Use autofill or edit manually.`
+                  }
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Desktop URL *
+                </label>
+                <input
+                  type="url"
+                  value={ctaUrl}
+                  onChange={(e) => setCtaUrl(e.target.value)}
+                  className="input-field"
+                  placeholder="https://example.com/product"
+                  required={ctaEnabled}
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  URL to open when the button is clicked on desktop devices
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Mobile URL (Optional)
+                </label>
+                <input
+                  type="url"
+                  value={ctaMobileUrl}
+                  onChange={(e) => setCtaMobileUrl(e.target.value)}
+                  className="input-field"
+                  placeholder="https://example.com/mobile-product"
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  Optional mobile-specific URL. If not provided, desktop URL will be used.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
         </form>
       </div>

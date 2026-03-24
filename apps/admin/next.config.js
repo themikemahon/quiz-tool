@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ['@quiz-tool/db'],
   images: {
     remotePatterns: [
       {

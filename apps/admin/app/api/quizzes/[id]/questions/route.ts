@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { sql } from '@vercel/postgres'
+import { sql } from '@quiz-tool/db'
 
 export async function DELETE(
   request: Request,

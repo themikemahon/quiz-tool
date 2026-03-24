@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres'
+import { sql } from '@quiz-tool/db'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import QuizForm from '@/components/QuizForm'
