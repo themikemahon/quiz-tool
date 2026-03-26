@@ -264,7 +264,9 @@
 
   /* Card Styles */
   .card {
-    @apply bg-white rounded-xl shadow-lg p-8;
+    @apply bg-white rounded-xl shadow-lg p-5 md:p-6 flex flex-col;
+    max-height: calc(100vh - 2.5rem);
+    overflow: hidden;
   }
 
   .card-sm {
@@ -294,6 +296,15 @@
     @apply p-4 rounded-md border;
     background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 4%, white);
     border-color: color-mix(in srgb, var(--color-primary, #3B82F6) 15%, transparent);
+  }
+
+  .result-label {
+    color: var(--color-text, #111827);
+  }
+
+  .tier-result {
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 8%, white);
+    border: 2px solid color-mix(in srgb, var(--color-primary, #3B82F6) 20%, transparent);
   }
 
   /* Progress bar using theme color */
@@ -355,96 +366,185 @@
   }
 }
 
-/* ── Norton Signature Design Treatments ──
-   1. Rounded Corners: containers 20-50px, buttons fully rounded (pill)
-   2. Stroke: 1px black border on buttons
-   3. Oversized: larger padding, heavier font weights
-   4. Hover: outline stroke on interactive elements */
+/* ── Norton / LifeLock Design System ──
+   Source: Norton - LifeLock Web Kit (Figma)
+   1. Pill-shaped buttons with 3px bold stroke
+   2. Inter ExtraBold (800) for headings + buttons, letter-spacing: -0.3px
+   3. Containers: 20px radius, images: 20px desktop / 16px mobile
+   4. Colors: Yellow 01 #FEEB29, Gray 01 #242424, Gray 05 #F4F1ED
+   5. Secondary CTA hover: dark bg inversion (#242424 bg, white text)
+   6. Result cards: Green 04 #D2E9CA / Red 03 #F4D5D5 with semantic text */
 
+/* ── Typography ── */
+[data-theme="norton"] h1,
+[data-theme="norton"] h2 {
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+[data-theme="norton"] h3,
+[data-theme="norton"] h4,
+[data-theme="norton"] h5 {
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+[data-theme="norton"] body {
+  font-weight: 500;
+  letter-spacing: -0.3px;
+}
+
+/* ── Primary CTA (Yellow 01 bg, 3px stroke) ── */
 [data-theme="norton"] .btn-primary,
 [data-theme="norton"] .btn-primary-sm {
   border-radius: 9999px;
-  border: 1px solid #2D2D2D;
-  font-weight: 700;
+  border: 3px solid #242424;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  background-color: #FEEB29;
+  color: #242424;
+}
+[data-theme="norton"] .btn-primary:hover,
+[data-theme="norton"] .btn-primary-sm:hover {
+  background-color: #FFF488;
+  opacity: 1;
+}
+[data-theme="norton"] .btn-primary:active,
+[data-theme="norton"] .btn-primary-sm:active {
+  background-color: #FFFBC9;
 }
 
+/* ── Secondary CTA (white bg, 3px stroke, hover inverts) ── */
 [data-theme="norton"] .btn-secondary,
 [data-theme="norton"] .btn-secondary-sm {
   border-radius: 9999px;
-  border: 1px solid #2D2D2D;
-  font-weight: 700;
+  border: 3px solid #242424;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  background-color: #FFFFFF;
+  color: #242424;
+}
+[data-theme="norton"] .btn-secondary:hover,
+[data-theme="norton"] .btn-secondary-sm:hover {
+  background-color: #242424;
+  color: #FFFFFF;
+  opacity: 1;
 }
 
+/* ── Answer Option Buttons (Secondary CTA style) ── */
 [data-theme="norton"] .btn-answer-option,
 [data-theme="norton"] .btn-answer-option-sm {
   border-radius: 9999px;
-  border: 1px solid #2D2D2D;
-  font-weight: 600;
+  border: 3px solid #242424;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  background-color: #FFFFFF;
+  color: #242424;
+  text-align: center;
 }
 [data-theme="norton"] .btn-answer-option:hover,
 [data-theme="norton"] .btn-answer-option-sm:hover {
-  border-color: #2D2D2D;
-  outline: 2px solid #2D2D2D;
-  outline-offset: -1px;
-  background-color: color-mix(in srgb, var(--color-primary) 8%, white);
+  background-color: #242424;
+  color: #FFFFFF;
+  border-color: #242424;
+  box-shadow: none;
 }
 
+/* ── Scam/Safe Buttons (same Secondary CTA style) ── */
 [data-theme="norton"] .btn-answer-scam,
 [data-theme="norton"] .btn-answer-scam-sm,
 [data-theme="norton"] .btn-answer-safe,
 [data-theme="norton"] .btn-answer-safe-sm {
   border-radius: 9999px;
-  border: 1px solid #2D2D2D;
-  font-weight: 700;
+  border: 3px solid #242424;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  background-color: #FFFFFF;
+  color: #242424;
 }
 [data-theme="norton"] .btn-answer-scam:hover,
 [data-theme="norton"] .btn-answer-scam-sm:hover,
 [data-theme="norton"] .btn-answer-safe:hover,
 [data-theme="norton"] .btn-answer-safe-sm:hover {
-  outline: 2px solid #2D2D2D;
-  outline-offset: -1px;
+  background-color: #242424;
+  color: #FFFFFF;
+  border-color: #242424;
 }
 
+/* ── Comparison Buttons ── */
 [data-theme="norton"] .btn-comparison {
-  border-radius: 24px;
-  border: 1px solid #2D2D2D;
+  border-radius: 20px;
+  border: 3px solid #242424;
 }
 [data-theme="norton"] .btn-comparison:hover {
-  outline: 2px solid #2D2D2D;
-  outline-offset: -1px;
+  box-shadow: 0 0 0 2px #242424;
 }
 
-/* Containers: 24px radius (within 20-50px guideline range) */
+/* ── Containers: 20px radius ── */
 [data-theme="norton"] .card {
-  border-radius: 24px;
-}
-[data-theme="norton"] .card-sm {
   border-radius: 20px;
 }
-
-/* Result cards — concentric radius: inner < outer (card is 24px) */
-[data-theme="norton"] .result-card-success,
-[data-theme="norton"] .result-card-error {
+[data-theme="norton"] .card-sm {
   border-radius: 16px;
 }
-[data-theme="norton"] .result-card-success-sm,
+
+/* ── Result Cards (semantic colors from design system) ── */
+[data-theme="norton"] .result-card-success,
+[data-theme="norton"] .result-card-success-sm {
+  border-radius: 16px;
+  background-color: #D2E9CA;
+  border-color: #007644;
+}
+[data-theme="norton"] .result-card-success .result-label,
+[data-theme="norton"] .result-card-success-sm .result-label {
+  color: #242424;
+}
+
+[data-theme="norton"] .result-card-error,
 [data-theme="norton"] .result-card-error-sm {
-  border-radius: 12px;
+  border-radius: 16px;
+  background-color: #F4D5D5;
+  border-color: #AA0000;
+}
+[data-theme="norton"] .result-card-error .result-label,
+[data-theme="norton"] .result-card-error-sm .result-label {
+  color: #242424;
 }
 
-/* Tier result container */
+/* ── Tier Result ── */
 [data-theme="norton"] .tier-result {
-  border-radius: 24px;
+  border-radius: 20px;
+  background-color: #FFFFFF;
+  border: 3px solid #242424;
 }
 
-/* Score badge: oversized padding */
-[data-theme="norton"] .score-badge {
+/* ── Score Badge ── */
+[data-theme="norton"] .score-badge,
+[data-theme="norton"] .score-badge-sm {
+  background-color: #FEEB29;
+  border: 3px solid #242424;
+  border-radius: 20px;
   padding: 1.25rem 2.5rem;
 }
+[data-theme="norton"] .score-text {
+  color: #242424;
+}
 
-/* Headings: heavier weight for oversized feel */
-[data-theme="norton"] h1 { font-weight: 800; }
-[data-theme="norton"] h2 { font-weight: 800; }
+/* ── Progress Bar ── */
+[data-theme="norton"] .progress-bar {
+  background-color: #FEEB29;
+}
+[data-theme="norton"] .bg-gray-200 {
+  background-color: #DDDBD9;
+}
+
+/* ── Images: 20px radius desktop, 16px mobile ── */
+[data-theme="norton"] .rounded-lg img {
+  border-radius: 20px;
+}
+@media (max-width: 767px) {
+  [data-theme="norton"] .rounded-lg img {
+    border-radius: 16px;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

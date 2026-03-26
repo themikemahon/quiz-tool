@@ -47,8 +47,8 @@ export default function CTAButton({
       target="_blank"
       rel="noopener noreferrer"
       className={embedMode
-        ? "w-full btn-primary-sm inline-block text-center shadow-md hover:shadow-lg"
-        : "w-full btn-primary inline-block text-center text-lg py-4 shadow-md hover:shadow-lg"
+        ? "w-full btn-primary-sm text-center"
+        : "w-full btn-primary text-center"
       }
     >
       {buttonText}

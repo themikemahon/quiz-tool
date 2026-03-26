@@ -37,8 +37,8 @@ export default function ComparisonQuestion({
   const isCorrect = selectedAnswer === question.correct_answer
 
   return (
-    <div className="transition-opacity duration-200">
-      <h2 className={`animate-fadeIn ${embedMode ? "text-xl font-bold mb-4" : "mb-5"}`} style={{ color: 'var(--color-text, #111827)', textWrap: 'balance' }}>
+    <div className="flex flex-col min-h-0 h-full">
+      <h2 className={`${embedMode ? "text-xl font-bold mb-4" : "mb-5"}`} style={{ color: 'var(--color-text, #111827)', textWrap: 'balance' }}>
         {question.question_text}
       </h2>
 
@@ -46,7 +46,7 @@ export default function ComparisonQuestion({
       <div className="grid transition-[grid-template-rows] duration-200" style={{ gridTemplateRows: showExplanation ? '0fr' : '1fr', transitionTimingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)' }}>
         <div className="overflow-hidden">
           <div
-            className={`transition-opacity duration-200 ${showExplanation ? 'opacity-0' : 'opacity-100'} ${embedMode ? "grid grid-cols-2 gap-3 mb-5" : "grid grid-cols-2 gap-4 mb-6"}`}
+            className={`transition-opacity duration-200 ${showExplanation ? 'opacity-0' : 'opacity-100'} ${embedMode ? "grid grid-cols-2 gap-3 mb-5" : "grid grid-cols-2 gap-4 mb-6 shrink min-h-0"}`}
           >
             {/* Image 1 */}
             <button
@@ -57,7 +57,8 @@ export default function ComparisonQuestion({
                 <img
                   src={question.image_url}
                   alt="Option 1"
-                  className="w-full h-auto transition-transform duration-200 comparison-img"
+                  className="w-full h-full object-cover transition-transform duration-200 comparison-img"
+                  decoding="sync"
                 />
               )}
             </button>
@@ -71,7 +72,8 @@ export default function ComparisonQuestion({
                 <img
                   src={question.image_url_2}
                   alt="Option 2"
-                  className="w-full h-auto transition-transform duration-200 comparison-img"
+                  className="w-full h-full object-cover transition-transform duration-200 comparison-img"
+                  decoding="sync"
                 />
               )}
             </button>
@@ -92,8 +94,7 @@ export default function ComparisonQuestion({
                   {isCorrect ? '✅' : '❌'}
                 </span>
                 <span
-                  className={`font-bold ${embedMode ? 'text-lg' : 'text-xl'}`}
-                  style={{ color: isCorrect ? 'var(--color-primary, #3B82F6)' : 'var(--color-text, #111827)' }}
+                  className={`font-bold result-label ${embedMode ? 'text-lg' : 'text-xl'}`}
                 >
                   {isCorrect ? translations.correct : translations.incorrect}
                 </span>
