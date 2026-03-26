@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { getTranslations } from '../../../../packages/shared/translations'
 import { applyTheme, applyThemeConfig } from '../../../../packages/shared/themeUtils'
 import { THEME_CONFIGS } from '../../../../packages/shared/themes'
-import type { Question, AnswerOption } from '../../../../packages/shared/types'
+import type { Question, AnswerOption, BrandTheme } from '../../../../packages/shared/types'
 import QuestionRenderer from './QuestionRenderer'
 import CTAButton from './CTAButton'
 
