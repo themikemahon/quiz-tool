@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { sql } from '@vercel/postgres'
+import { sql } from '@quiz-tool/db'
 import type { ResultTier } from '@quiz-tool/shared/types'
 
 export async function POST(request: Request) {

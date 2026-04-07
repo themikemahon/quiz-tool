@@ -37,55 +37,55 @@ export default function ComparisonQuestion({
   const isCorrect = selectedAnswer === question.correct_answer
 
   return (
-    <div className="transition-opacity duration-500">
-      <h2 className={`animate-fadeIn ${embedMode ? "text-xl font-bold text-gray-900 mb-4" : "mb-5"}`}>
+    <div className="flex flex-col min-h-0 h-full">
+      <h2 className={`${embedMode ? "text-xl font-bold mb-4" : "mb-5"}`} style={{ color: 'var(--color-text, #111827)', textWrap: 'balance' }}>
         {question.question_text}
       </h2>
 
       {/* Images Side-by-Side */}
-      <div className="grid transition-all duration-500 ease-in-out" style={{ gridTemplateRows: showExplanation ? '0fr' : '1fr' }}>
+      <div className="grid transition-[grid-template-rows] duration-200" style={{ gridTemplateRows: showExplanation ? '0fr' : '1fr', transitionTimingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)' }}>
         <div className="overflow-hidden">
-          <div 
-            className={`transition-opacity duration-300 ${showExplanation ? 'opacity-0' : 'opacity-100'} ${embedMode ? "grid grid-cols-2 gap-3 mb-5" : "grid grid-cols-2 gap-4 mb-6"}`}
+          <div
+            className={`transition-opacity duration-200 ${showExplanation ? 'opacity-0' : 'opacity-100'} ${embedMode ? "grid grid-cols-2 gap-3 mb-5" : "grid grid-cols-2 gap-4 mb-6 shrink min-h-0"}`}
           >
             {/* Image 1 */}
             <button
               onClick={() => handleImageClick('image-1')}
-              className="group relative rounded-lg overflow-hidden border-2 border-gray-300 hover:border-blue-500 transition-all duration-200 bg-white"
+              className="group btn-comparison"
             >
               {question.image_url && (
                 <img
                   src={question.image_url}
                   alt="Option 1"
-                  className="w-full h-auto group-hover:scale-105 transition-transform duration-200"
+                  className="w-full h-full object-cover transition-transform duration-200 comparison-img"
+                  decoding="sync"
                 />
               )}
-              <div className="absolute inset-0 bg-blue-500 opacity-0 group-hover:opacity-10 transition-opacity duration-200" />
             </button>
 
             {/* Image 2 */}
             <button
               onClick={() => handleImageClick('image-2')}
-              className="group relative rounded-lg overflow-hidden border-2 border-gray-300 hover:border-blue-500 transition-all duration-200 bg-white"
+              className="group btn-comparison"
             >
               {question.image_url_2 && (
                 <img
                   src={question.image_url_2}
                   alt="Option 2"
-                  className="w-full h-auto group-hover:scale-105 transition-transform duration-200"
+                  className="w-full h-full object-cover transition-transform duration-200 comparison-img"
+                  decoding="sync"
                 />
               )}
-              <div className="absolute inset-0 bg-blue-500 opacity-0 group-hover:opacity-10 transition-opacity duration-200" />
             </button>
           </div>
         </div>
       </div>
 
       {/* Explanation */}
-      <div className="grid transition-all duration-500 ease-in-out delay-100" style={{ gridTemplateRows: showExplanation ? '1fr' : '0fr' }}>
+      <div className="grid transition-[grid-template-rows] duration-200 delay-75" style={{ gridTemplateRows: showExplanation ? '1fr' : '0fr', transitionTimingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)' }}>
         <div className="overflow-hidden">
-          <div 
-            className={`transition-opacity duration-300 ${showExplanation ? 'opacity-100 delay-200' : 'opacity-0'} ${embedMode ? "space-y-3" : "space-y-4"}`}
+          <div
+            className={`transition-opacity duration-200 ${showExplanation ? 'opacity-100 delay-100' : 'opacity-0'} ${embedMode ? "space-y-3" : "space-y-4"}`}
           >
             {/* Result */}
             <div className={embedMode ? (isCorrect ? 'result-card-success-sm' : 'result-card-error-sm') : (isCorrect ? 'result-card-success' : 'result-card-error')}>
@@ -93,12 +93,14 @@ export default function ComparisonQuestion({
                 <span className={embedMode ? "text-xl" : "text-2xl"}>
                   {isCorrect ? '✅' : '❌'}
                 </span>
-                <span className={`font-bold ${isCorrect ? 'text-green-700' : 'text-red-700'} ${embedMode ? 'text-lg' : 'text-xl'}`}>
+                <span
+                  className={`font-bold result-label ${embedMode ? 'text-lg' : 'text-xl'}`}
+                >
                   {isCorrect ? translations.correct : translations.incorrect}
                 </span>
               </div>
               {question.explanation && (
-                <p className={embedMode ? "text-sm text-gray-700 leading-relaxed" : "text-base text-gray-700 leading-relaxed"}>
+                <p className={embedMode ? "text-sm leading-relaxed" : "text-base leading-relaxed"} style={{ color: 'var(--color-text, #111827)', opacity: 0.8, textWrap: 'pretty' }}>
                   {question.explanation}
                 </p>
               )}

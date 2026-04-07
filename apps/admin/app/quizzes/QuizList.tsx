@@ -32,7 +32,7 @@ export default function QuizList() {
     try {
       const res = await fetch('/api/quizzes')
       const data = await res.json()
-      setQuizzes(data)
+      setQuizzes(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error('Error fetching quizzes:', error)
     } finally {

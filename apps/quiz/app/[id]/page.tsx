@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres'
+import { sql } from '@quiz-tool/db'
 import QuizPlayer from './QuizPlayer'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'

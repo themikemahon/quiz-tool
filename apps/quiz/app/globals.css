@@ -2,107 +2,334 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Mier B font faces — metric overrides normalize the 339-unit line gap
+   so text centers consistently across all brand fonts.
+   Original: ascent=750, descent=250, lineGap=339 (total 1339)
+   Normalized: ascent=100%, descent=25%, lineGap=0% (matches Inter/Roboto) */
+@font-face {
+  font-family: 'Mier B';
+  src: url('/fonts/MierB-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  ascent-override: 100%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Mier B';
+  src: url('/fonts/MierB-DemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  ascent-override: 100%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Mier B';
+  src: url('/fonts/MierB-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  ascent-override: 100%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Mier B';
+  src: url('/fonts/MierB-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+  ascent-override: 100%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
 @layer base {
-  /* Typography Scale */
-  h1 { @apply text-3xl font-bold; }
-  h2 { @apply text-2xl font-bold; }
-  h3 { @apply text-xl font-semibold; }
-  h4 { @apply text-lg font-semibold; }
-  h5 { @apply text-base font-semibold; }
-  
-  /* Apply theme font family to body */
+  /* Typography Scale — use heading font for headings, body font for body */
+  h1 { @apply text-3xl font-bold; font-family: var(--font-heading, var(--font-family, 'Inter, system-ui, sans-serif')); line-height: 1.2; text-wrap: balance; }
+  h2 { @apply text-2xl font-bold; font-family: var(--font-heading, var(--font-family, 'Inter, system-ui, sans-serif')); line-height: 1.3; text-wrap: balance; }
+  h3 { @apply text-xl font-semibold; font-family: var(--font-heading, var(--font-family, 'Inter, system-ui, sans-serif')); line-height: 1.3; }
+  h4 { @apply text-lg font-semibold; font-family: var(--font-heading, var(--font-family, 'Inter, system-ui, sans-serif')); line-height: 1.4; }
+  h5 { @apply text-base font-semibold; font-family: var(--font-heading, var(--font-family, 'Inter, system-ui, sans-serif')); line-height: 1.4; }
+
+  /* Apply theme body font to body */
   body {
-    font-family: var(--font-family, 'Inter, system-ui, sans-serif');
+    font-family: var(--font-body, var(--font-family, 'Inter, system-ui, sans-serif'));
+    color: var(--color-text, #111827);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
 @layer components {
   /* Button Hierarchy - Standard */
   .btn-primary {
-    @apply px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity text-base;
+    @apply px-6 py-3 rounded-lg font-semibold hover:opacity-90 text-base;
+    @apply flex items-center justify-center;
     background-color: var(--color-primary, #3B82F6);
-    color: white;
+    color: var(--color-button-text, white);
+    line-height: 1.4;
+    transition-property: transform, opacity;
+    transition-duration: 160ms;
+    transition-timing-function: var(--ease-out);
   }
-  
+  .btn-primary:active {
+    transform: scale(0.97);
+  }
+
   .btn-secondary {
-    @apply px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:opacity-80 transition-opacity text-base;
+    @apply px-6 py-3 rounded-lg font-medium hover:opacity-80 text-base;
+    @apply flex items-center justify-center;
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 8%, white);
+    color: var(--color-text, #374151);
+    line-height: 1.4;
+    transition-property: transform, opacity;
+    transition-duration: 160ms;
+    transition-timing-function: var(--ease-out);
   }
-  
+  .btn-secondary:active {
+    transform: scale(0.97);
+  }
+
   .btn-answer-scam {
-    @apply bg-red-100 text-red-700 px-6 py-3 rounded-lg font-semibold hover:opacity-80 transition-opacity border border-red-300 text-base;
+    @apply px-6 py-3 rounded-lg font-semibold hover:opacity-80 border-2 text-base;
+    @apply flex items-center justify-center;
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 6%, white);
+    color: var(--color-text, #111827);
+    border-color: color-mix(in srgb, var(--color-primary, #3B82F6) 25%, transparent);
+    line-height: 1.4;
+    transition-property: transform, opacity;
+    transition-duration: 160ms;
+    transition-timing-function: var(--ease-out);
   }
-  
+  .btn-answer-scam:hover {
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 12%, white);
+    border-color: var(--color-primary, #3B82F6);
+  }
+  .btn-answer-scam:active {
+    transform: scale(0.97);
+  }
+
   .btn-answer-safe {
-    @apply bg-green-100 text-green-700 px-6 py-3 rounded-lg font-semibold hover:opacity-80 transition-opacity border border-green-300 text-base;
+    @apply px-6 py-3 rounded-lg font-semibold hover:opacity-80 border-2 text-base;
+    @apply flex items-center justify-center;
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 6%, white);
+    color: var(--color-text, #111827);
+    border-color: color-mix(in srgb, var(--color-primary, #3B82F6) 25%, transparent);
+    line-height: 1.4;
+    transition-property: transform, opacity;
+    transition-duration: 160ms;
+    transition-timing-function: var(--ease-out);
   }
-  
+  .btn-answer-safe:hover {
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 12%, white);
+    border-color: var(--color-primary, #3B82F6);
+  }
+  .btn-answer-safe:active {
+    transform: scale(0.97);
+  }
+
   /* Button Hierarchy - Embed Mode (Compact) */
   .btn-primary-sm {
-    @apply px-4 py-2 rounded-md font-semibold hover:opacity-90 transition-opacity text-sm;
+    @apply px-4 py-2 rounded-md font-semibold hover:opacity-90 text-sm;
+    @apply flex items-center justify-center;
     background-color: var(--color-primary, #3B82F6);
-    color: white;
+    color: var(--color-button-text, white);
+    line-height: 1.4;
+    transition-property: transform, opacity;
+    transition-duration: 160ms;
+    transition-timing-function: var(--ease-out);
   }
-  
+  .btn-primary-sm:active {
+    transform: scale(0.97);
+  }
+
   .btn-secondary-sm {
-    @apply px-4 py-2 bg-gray-100 text-gray-700 rounded-md font-medium hover:opacity-80 transition-opacity text-sm;
+    @apply px-4 py-2 rounded-md font-medium hover:opacity-80 text-sm;
+    @apply flex items-center justify-center;
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 8%, white);
+    color: var(--color-text, #374151);
+    line-height: 1.4;
+    transition-property: transform, opacity;
+    transition-duration: 160ms;
+    transition-timing-function: var(--ease-out);
   }
-  
+  .btn-secondary-sm:active {
+    transform: scale(0.97);
+  }
+
   .btn-answer-scam-sm {
-    @apply bg-red-100 text-red-700 px-4 py-2 rounded-md font-semibold hover:opacity-80 transition-opacity border border-red-300 text-sm;
+    @apply px-4 py-2 rounded-md font-semibold hover:opacity-80 border-2 text-sm;
+    @apply flex items-center justify-center;
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 6%, white);
+    color: var(--color-text, #111827);
+    border-color: color-mix(in srgb, var(--color-primary, #3B82F6) 25%, transparent);
+    line-height: 1.4;
+    transition-property: transform, opacity;
+    transition-duration: 160ms;
+    transition-timing-function: var(--ease-out);
   }
-  
+  .btn-answer-scam-sm:hover {
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 12%, white);
+    border-color: var(--color-primary, #3B82F6);
+  }
+  .btn-answer-scam-sm:active {
+    transform: scale(0.97);
+  }
+
   .btn-answer-safe-sm {
-    @apply bg-green-100 text-green-700 px-4 py-2 rounded-md font-semibold hover:opacity-80 transition-opacity border border-green-300 text-sm;
+    @apply px-4 py-2 rounded-md font-semibold hover:opacity-80 border-2 text-sm;
+    @apply flex items-center justify-center;
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 6%, white);
+    color: var(--color-text, #111827);
+    border-color: color-mix(in srgb, var(--color-primary, #3B82F6) 25%, transparent);
+    line-height: 1.4;
+    transition-property: transform, opacity;
+    transition-duration: 160ms;
+    transition-timing-function: var(--ease-out);
   }
-  
+  .btn-answer-safe-sm:hover {
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 12%, white);
+    border-color: var(--color-primary, #3B82F6);
+  }
+  .btn-answer-safe-sm:active {
+    transform: scale(0.97);
+  }
+
+  /* Answer Option Buttons — theme-colored hover */
+  .btn-answer-option {
+    @apply w-full text-left px-6 py-4 rounded-lg border-2 bg-white text-base font-medium;
+    border-color: #D1D5DB;
+    color: var(--color-text, #111827);
+    line-height: 1.4;
+    transition-property: border-color, background-color, transform;
+    transition-duration: 200ms;
+    transition-timing-function: var(--ease-out);
+  }
+  .btn-answer-option:hover {
+    border-color: var(--color-primary, #3B82F6);
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 5%, white);
+  }
+  .btn-answer-option:active {
+    transform: scale(0.97);
+  }
+
+  .btn-answer-option-sm {
+    @apply w-full text-left px-4 py-3 rounded-lg border-2 bg-white text-sm font-medium;
+    border-color: #D1D5DB;
+    color: var(--color-text, #111827);
+    line-height: 1.4;
+    transition-property: border-color, background-color, transform;
+    transition-duration: 200ms;
+    transition-timing-function: var(--ease-out);
+  }
+  .btn-answer-option-sm:hover {
+    border-color: var(--color-primary, #3B82F6);
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 5%, white);
+  }
+  .btn-answer-option-sm:active {
+    transform: scale(0.97);
+  }
+
+  /* Comparison Image Buttons — theme-colored hover */
+  .btn-comparison {
+    @apply relative rounded-lg overflow-hidden border-2 bg-white;
+    border-color: #D1D5DB;
+    transition-property: border-color, transform;
+    transition-duration: 200ms;
+    transition-timing-function: var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .btn-comparison:hover {
+      border-color: var(--color-primary, #3B82F6);
+    }
+    .btn-comparison:hover .comparison-img {
+      transform: scale(1.05);
+    }
+  }
+  .btn-comparison:active {
+    transform: scale(0.98);
+  }
+
   /* Card Styles */
   .card {
-    @apply bg-white rounded-xl shadow-lg p-8;
+    @apply bg-white rounded-xl shadow-lg p-5 md:p-6 flex flex-col;
+    max-height: calc(100vh - 2.5rem);
+    overflow: hidden;
   }
-  
+
   .card-sm {
     @apply bg-white rounded-lg shadow-md p-5;
   }
-  
-  /* Result Cards */
+
+  /* Result Cards — themed */
   .result-card-success {
-    @apply p-5 rounded-lg bg-green-50 border-2 border-green-300;
+    @apply p-5 rounded-lg border-2;
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 8%, white);
+    border-color: color-mix(in srgb, var(--color-primary, #3B82F6) 25%, transparent);
   }
-  
+
   .result-card-error {
-    @apply p-5 rounded-lg bg-red-50 border-2 border-red-300;
+    @apply p-5 rounded-lg border-2;
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 4%, white);
+    border-color: color-mix(in srgb, var(--color-primary, #3B82F6) 15%, transparent);
   }
-  
+
   .result-card-success-sm {
-    @apply p-4 rounded-md bg-green-50 border border-green-300;
+    @apply p-4 rounded-md border;
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 8%, white);
+    border-color: color-mix(in srgb, var(--color-primary, #3B82F6) 25%, transparent);
   }
-  
+
   .result-card-error-sm {
-    @apply p-4 rounded-md bg-red-50 border border-red-300;
+    @apply p-4 rounded-md border;
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 4%, white);
+    border-color: color-mix(in srgb, var(--color-primary, #3B82F6) 15%, transparent);
   }
-  
+
+  .result-label {
+    color: var(--color-text, #111827);
+  }
+
+  .tier-result {
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 8%, white);
+    border: 2px solid color-mix(in srgb, var(--color-primary, #3B82F6) 20%, transparent);
+  }
+
   /* Progress bar using theme color */
   .progress-bar {
-    @apply h-2 rounded-full transition-all duration-500 ease-out;
+    @apply h-2 rounded-full;
     background-color: var(--color-primary, #3B82F6);
+    transition-property: width;
+    transition-duration: 500ms;
+    transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
   }
-  
+
   /* Score badge using theme color */
   .score-badge {
-    @apply inline-block rounded-full px-8 py-4;
-    background-color: var(--color-primary, #3B82F6);
-    opacity: 0.1;
+    @apply inline-block rounded-full px-8 py-4 relative;
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 10%, transparent);
   }
-  
+
   .score-badge-sm {
-    @apply inline-block rounded-full px-6 py-3;
-    background-color: var(--color-primary, #3B82F6);
-    opacity: 0.1;
+    @apply inline-block rounded-full px-6 py-3 relative;
+    background-color: color-mix(in srgb, var(--color-primary, #3B82F6) 10%, transparent);
   }
-  
+
   .score-text {
-    @apply font-bold;
-    color: var(--color-primary, #3B82F6);
+    @apply font-bold relative;
+    color: var(--color-text, #111827);
   }
 }
 
@@ -119,6 +346,218 @@
   }
 
   .animate-fadeIn {
-    animation: fadeIn 0.4s ease-out;
+    animation: fadeIn 0.25s var(--ease-out);
+  }
+
+  .stagger-item {
+    opacity: 0;
+    transform: translateY(8px);
+    animation: fadeIn 0.3s var(--ease-out) forwards;
+  }
+  .stagger-item:nth-child(1) { animation-delay: 0ms; }
+  .stagger-item:nth-child(2) { animation-delay: 50ms; }
+  .stagger-item:nth-child(3) { animation-delay: 50ms; }
+  .stagger-item:nth-child(4) { animation-delay: 100ms; }
+  .stagger-item:nth-child(5) { animation-delay: 150ms; }
+  .stagger-item:nth-child(6) { animation-delay: 200ms; }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ── Norton / LifeLock Design System ──
+   Source: Norton - LifeLock Web Kit (Figma)
+   1. Pill-shaped buttons with 3px bold stroke
+   2. Inter ExtraBold (800) for headings + buttons, letter-spacing: -0.3px
+   3. Containers: 20px radius, images: 20px desktop / 16px mobile
+   4. Colors: Yellow 01 #FEEB29, Gray 01 #242424, Gray 05 #F4F1ED
+   5. Secondary CTA hover: dark bg inversion (#242424 bg, white text)
+   6. Result cards: Green 04 #D2E9CA / Red 03 #F4D5D5 with semantic text */
+
+/* ── Typography ── */
+[data-theme="norton"] h1,
+[data-theme="norton"] h2 {
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+[data-theme="norton"] h3,
+[data-theme="norton"] h4,
+[data-theme="norton"] h5 {
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+[data-theme="norton"] body {
+  font-weight: 500;
+  letter-spacing: -0.3px;
+}
+
+/* ── Primary CTA (Yellow 01 bg, 3px stroke) ── */
+[data-theme="norton"] .btn-primary,
+[data-theme="norton"] .btn-primary-sm {
+  border-radius: 9999px;
+  border: 3px solid #242424;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  background-color: #FEEB29;
+  color: #242424;
+}
+[data-theme="norton"] .btn-primary:hover,
+[data-theme="norton"] .btn-primary-sm:hover {
+  background-color: #FFF488;
+  opacity: 1;
+}
+[data-theme="norton"] .btn-primary:active,
+[data-theme="norton"] .btn-primary-sm:active {
+  background-color: #FFFBC9;
+}
+
+/* ── Secondary CTA (white bg, 3px stroke, hover inverts) ── */
+[data-theme="norton"] .btn-secondary,
+[data-theme="norton"] .btn-secondary-sm {
+  border-radius: 9999px;
+  border: 3px solid #242424;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  background-color: #FFFFFF;
+  color: #242424;
+}
+[data-theme="norton"] .btn-secondary:hover,
+[data-theme="norton"] .btn-secondary-sm:hover {
+  background-color: #242424;
+  color: #FFFFFF;
+  opacity: 1;
+}
+
+/* ── Answer Option Buttons (Secondary CTA style) ── */
+[data-theme="norton"] .btn-answer-option,
+[data-theme="norton"] .btn-answer-option-sm {
+  border-radius: 9999px;
+  border: 3px solid #242424;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  background-color: #FFFFFF;
+  color: #242424;
+  text-align: center;
+}
+[data-theme="norton"] .btn-answer-option:hover,
+[data-theme="norton"] .btn-answer-option-sm:hover {
+  background-color: #242424;
+  color: #FFFFFF;
+  border-color: #242424;
+  box-shadow: none;
+}
+
+/* ── Scam/Safe Buttons (same Secondary CTA style) ── */
+[data-theme="norton"] .btn-answer-scam,
+[data-theme="norton"] .btn-answer-scam-sm,
+[data-theme="norton"] .btn-answer-safe,
+[data-theme="norton"] .btn-answer-safe-sm {
+  border-radius: 9999px;
+  border: 3px solid #242424;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  background-color: #FFFFFF;
+  color: #242424;
+}
+[data-theme="norton"] .btn-answer-scam:hover,
+[data-theme="norton"] .btn-answer-scam-sm:hover,
+[data-theme="norton"] .btn-answer-safe:hover,
+[data-theme="norton"] .btn-answer-safe-sm:hover {
+  background-color: #242424;
+  color: #FFFFFF;
+  border-color: #242424;
+}
+
+/* ── Comparison Buttons ── */
+[data-theme="norton"] .btn-comparison {
+  border-radius: 20px;
+  border: 3px solid #242424;
+}
+[data-theme="norton"] .btn-comparison:hover {
+  box-shadow: 0 0 0 2px #242424;
+}
+
+/* ── Containers: 20px radius ── */
+[data-theme="norton"] .card {
+  border-radius: 20px;
+}
+[data-theme="norton"] .card-sm {
+  border-radius: 16px;
+}
+
+/* ── Result Cards (semantic colors from design system) ── */
+[data-theme="norton"] .result-card-success,
+[data-theme="norton"] .result-card-success-sm {
+  border-radius: 16px;
+  background-color: #D2E9CA;
+  border-color: #007644;
+}
+[data-theme="norton"] .result-card-success .result-label,
+[data-theme="norton"] .result-card-success-sm .result-label {
+  color: #242424;
+}
+
+[data-theme="norton"] .result-card-error,
+[data-theme="norton"] .result-card-error-sm {
+  border-radius: 16px;
+  background-color: #F4D5D5;
+  border-color: #AA0000;
+}
+[data-theme="norton"] .result-card-error .result-label,
+[data-theme="norton"] .result-card-error-sm .result-label {
+  color: #242424;
+}
+
+/* ── Tier Result ── */
+[data-theme="norton"] .tier-result {
+  border-radius: 20px;
+  background-color: #FFFFFF;
+  border: 3px solid #242424;
+}
+
+/* ── Score Badge ── */
+[data-theme="norton"] .score-badge,
+[data-theme="norton"] .score-badge-sm {
+  background-color: #FEEB29;
+  border: 3px solid #242424;
+  border-radius: 20px;
+  padding: 1.25rem 2.5rem;
+}
+[data-theme="norton"] .score-text {
+  color: #242424;
+}
+
+/* ── Progress Bar ── */
+[data-theme="norton"] .progress-bar {
+  background-color: #FEEB29;
+}
+[data-theme="norton"] .bg-gray-200 {
+  background-color: #DDDBD9;
+}
+
+/* ── Images: 20px radius desktop, 16px mobile ── */
+[data-theme="norton"] .rounded-lg img {
+  border-radius: 20px;
+}
+@media (max-width: 767px) {
+  [data-theme="norton"] .rounded-lg img {
+    border-radius: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .animate-fadeIn {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .progress-bar {
+    transition: none;
   }
 }

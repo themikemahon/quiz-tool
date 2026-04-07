@@ -46,9 +46,9 @@ export default function CTAButton({
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className={embedMode 
-        ? "w-full inline-block text-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-2.5 px-5 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg"
-        : "w-full inline-block text-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg"
+      className={embedMode
+        ? "w-full btn-primary-sm text-center"
+        : "w-full btn-primary text-center"
       }
     >
       {buttonText}

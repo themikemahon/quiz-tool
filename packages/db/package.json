@@ -1,0 +1,12 @@
+{
+  "name": "@quiz-tool/db",
+  "version": "0.1.0",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "dependencies": {
+    "pg": "^8.13.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.0"
+  }
+}

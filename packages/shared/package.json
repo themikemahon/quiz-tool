@@ -2,5 +2,8 @@
   "name": "@quiz-tool/shared",
   "version": "0.1.0",
   "main": "./types.ts",
-  "types": "./types.ts"
+  "types": "./types.ts",
+  "dependencies": {
+    "pg": "^8.20.0"
+  }
 }

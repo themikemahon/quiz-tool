@@ -121,27 +121,31 @@ function ScamDetectorQuestion({
   const isCorrect = selectedAnswer === question.correct_answer
 
   return (
-    <div className="transition-opacity duration-500">
-      <h2 className={`animate-fadeIn ${embedMode ? "text-xl font-bold text-gray-900 mb-4" : "mb-5"}`}>
+    <div className="flex flex-col min-h-0 h-full">
+      <h2 className={`shrink-0 ${embedMode ? "text-xl font-bold mb-4" : "mb-5"}`} style={{ color: 'var(--color-text, #111827)', textWrap: 'balance' }}>
         {question.question_text}
       </h2>
 
-      {/* Image */}
+      {/* Image — shrinks when answer is revealed */}
       {question.image_url && (
-        <div className={embedMode ? "mb-5 rounded-lg overflow-hidden border border-gray-200 relative" : "mb-6 rounded-lg overflow-hidden border border-gray-200 relative"}>
+        <div
+          className={`rounded-lg overflow-hidden relative shrink min-h-0 transition-all duration-300 ${showExplanation ? 'mb-3' : 'mb-4'}`}
+          style={{ boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.06)', transitionTimingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)' }}
+        >
           <img
             src={question.image_url}
             alt="Question"
-            className="w-full h-auto animate-fadeIn"
+            className="w-full h-full object-cover"
+            decoding="sync"
           />
         </div>
       )}
 
       {/* Answer Buttons */}
-      <div className="grid transition-all duration-500 ease-in-out" style={{ gridTemplateRows: showExplanation ? '0fr' : '1fr' }}>
+      <div className="grid shrink-0 transition-[grid-template-rows] duration-200" style={{ gridTemplateRows: showExplanation ? '0fr' : '1fr', transitionTimingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)' }}>
         <div className="overflow-hidden">
-          <div 
-            className={`transition-opacity duration-300 ${showExplanation ? 'opacity-0' : 'opacity-100'} ${embedMode ? "grid grid-cols-2 gap-3" : "grid grid-cols-2 gap-4"}`}
+          <div
+            className={`transition-opacity duration-200 ${showExplanation ? 'opacity-0' : 'opacity-100'} ${embedMode ? "grid grid-cols-2 gap-3" : "grid grid-cols-2 gap-4"}`}
           >
             <button
               onClick={() => handleAnswerClick('scam')}
@@ -160,10 +164,10 @@ function ScamDetectorQuestion({
       </div>
 
       {/* Explanation */}
-      <div className="grid transition-all duration-500 ease-in-out delay-100" style={{ gridTemplateRows: showExplanation ? '1fr' : '0fr' }}>
+      <div className="grid shrink-0 transition-[grid-template-rows] duration-200 delay-75" style={{ gridTemplateRows: showExplanation ? '1fr' : '0fr', transitionTimingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)' }}>
         <div className="overflow-hidden">
-          <div 
-            className={`transition-opacity duration-300 ${showExplanation ? 'opacity-100 delay-200' : 'opacity-0'} ${embedMode ? "space-y-3" : "space-y-4"}`}
+          <div
+            className={`transition-opacity duration-200 ${showExplanation ? 'opacity-100 delay-100' : 'opacity-0'} ${embedMode ? "space-y-3" : "space-y-4"}`}
           >
             {/* Result */}
             <div className={embedMode ? (isCorrect ? 'result-card-success-sm' : 'result-card-error-sm') : (isCorrect ? 'result-card-success' : 'result-card-error')}>
@@ -171,12 +175,14 @@ function ScamDetectorQuestion({
                 <span className={embedMode ? "text-xl" : "text-2xl"}>
                   {isCorrect ? '✅' : '❌'}
                 </span>
-                <span className={`font-bold ${isCorrect ? 'text-green-700' : 'text-red-700'} ${embedMode ? 'text-lg' : 'text-xl'}`}>
+                <span
+                  className={`font-bold result-label ${embedMode ? 'text-lg' : 'text-xl'}`}
+                >
                   {isCorrect ? translations.correct : translations.incorrect}
                 </span>
               </div>
               {question.explanation && (
-                <p className={embedMode ? "text-sm text-gray-700 leading-relaxed" : "text-base text-gray-700 leading-relaxed"}>
+                <p className={embedMode ? "text-sm leading-relaxed" : "text-base leading-relaxed"} style={{ color: 'var(--color-text, #111827)', opacity: 0.8, textWrap: 'pretty' }}>
                   {question.explanation}
                 </p>
               )}

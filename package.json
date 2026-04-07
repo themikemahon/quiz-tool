@@ -11,7 +11,9 @@
     "build": "turbo run build",
     "lint": "turbo run lint"
   },
+  "packageManager": "npm@11.6.2",
   "devDependencies": {
+    "agentation": "^2.3.3",
     "turbo": "^2.0.0"
   }
 }
