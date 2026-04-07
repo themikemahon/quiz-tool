@@ -1,6 +1,3 @@
 {
-  "buildCommand": "cd apps/quiz && npm run build",
-  "outputDirectory": "apps/quiz/.next",
-  "installCommand": "npm install",
   "framework": "nextjs"
 }
